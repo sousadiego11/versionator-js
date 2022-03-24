@@ -4,7 +4,7 @@
   "description": "Create dynamic changelogs for your project!",
   "main": "app.js",
   "module": "app.js",
-  "bin": "node app.js",
+  "bin": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "versionator": "node app.js"

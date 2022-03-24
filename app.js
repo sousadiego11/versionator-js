@@ -85,6 +85,5 @@ function versionator() {
         console.log(chalk.black.bgYellow.bold('Changelog já está com os commits mais recentes!'))
     }
 }
-versionator()
 
 module.exports = versionator
