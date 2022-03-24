@@ -1,9 +1,9 @@
+const { dirname } = require('path');
+const root = dirname(require.main.filename);
 const fs = require('fs')
 const chalk = require('chalk')
 const child = require('child_process')
-const config = require("./changelog.config.json").commits_dir
-const { dirname } = require('path');
-const root = dirname(require.main.filename);
+const config = require(`${root}/changelog.config.json`).commits_dir
 const version = require(`${root}/package.json`).version
 const mdDir = `${root}/CHANGELOG.md`
 const writable = fs.openSync(mdDir, 'a+')

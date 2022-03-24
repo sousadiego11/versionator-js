@@ -3,6 +3,7 @@
   "version": "1.1.0",
   "description": "Create dynamic changelogs for your project!",
   "main": "app.js",
+  "module": "app.js",
   "bin": "node app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
