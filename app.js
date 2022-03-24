@@ -59,7 +59,7 @@ const commits = output.map((c) => {
     const date = execRegex(tag,/date={(.+?)}/.exec(bodyRaw))
     const author = execRegex(tag,/author={(.+?)}/.exec(bodyRaw))
     
-    const body = bodyRaw.replace(type[0], '').replace(issue[0], '').replace(date[0], '').replace(author[0], '')
+    const body = bodyRaw.replace(type[0], '').replace(issue[0], '').replace(date[0], '').replace(author[0], '').trim()
     
     return {body, tag, type: type[1], issue: issue[1], date: date[1], author: author[1]}
     
