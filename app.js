@@ -54,7 +54,7 @@ const execRegex = (validator, regex) => {
 const commits = output.map((c) => {
     const [bodyRaw, tag] = c.split('\n')
 
-    const type = execRegex(tag, /(feat|refactor):/.exec(bodyRaw))
+    const type = execRegex(tag, /(feat|refactor|fix|docs|chore):/.exec(bodyRaw))
     const issue = execRegex(tag, /\(#(.+)\)/.exec(bodyRaw))
     const date = execRegex(tag,/date={(.+?)}/.exec(bodyRaw))
     const author = execRegex(tag,/author={(.+?)}/.exec(bodyRaw))
