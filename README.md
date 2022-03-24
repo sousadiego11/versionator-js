@@ -11,9 +11,17 @@ npm install versionator-js
 ```
 
 ## Usage
-
 This package uses [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) as a base for constructing the changelog, make sure your commits follow this pattern.
 
+📝 Create a changelog.config.json in your root directory and provide the link for your repository's commits destination as the example bellow:
+```javascript
+{
+    "commits_dir": "https://github.com/user/repository/commit"
+}
+```
+
+
+📌 Import and run the module.
 ```javascript
 const versionator = require('versionator')
 
