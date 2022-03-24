@@ -28,7 +28,7 @@ const mdCreator =  {
         this.chores.push(e)
     },
     build({ body, tag, issue, date, author }) {
-        return  issue ? `(${date}) ${author}: [${issue}](${config}/${tag}) - ${body} ${config}/${tag}\n` : `(${date}) ${author}: ${body} (${date}) ${config}/${tag}\n`
+        return  issue ? `(${date}) ${author}: [${issue}](${config}/${tag}) - ${body} ${config}/${tag}\n` : `(${date}) ${author}: ${body} ${config}/${tag}\n`
     }
 }
 
