@@ -27,7 +27,7 @@ const mdCreator =  {
         this.chores.push(e)
     },
     build({ body, tag, issue }) {
-        return `(${issue}) - ${body} ${config}/${tag}`
+        return `(${issue}) - ${body} ${config}/${tag}\n`
     }
 }
 
