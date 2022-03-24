@@ -7,11 +7,11 @@ const version = require(`${root}/package.json`).version
 const mdDir = `${root}/CHANGELOG.md`
 
 const mdCreator =  {
-    feats: ['## Features:\n'],
-    fixes: ['## Fixes:\n'],
-    refactors: ['## Refactors:\n'],
-    docums: ['## Docs:\n'],
-    chores: ['## Chore:\n'],
+    feats: ['### ✨**Features**:\n'],
+    fixes: ['### **Fixes**:\n'],
+    refactors: ['### 🔥**Refactors**:\n'],
+    docums: ['### **Docs**:\n'],
+    chores: ['### **Chore**:\n'],
     feat(e) {
         this.feats.push(e)
     },
@@ -28,7 +28,7 @@ const mdCreator =  {
         this.chores.push(e)
     },
     build({ body, tag, issue, date, author }) {
-        return  issue ? `(${date}) ${author}: [${issue}](${config}/${tag}) - ${body} ${config}/${tag}\n` : `(${date}) ${author}: ${body} ${config}/${tag}\n`
+        return  issue ? `(${date}) **${author}**: ${issue} - ${body} ${config}/${tag}\n` : `(${date}) **${author}**: ${body} ${config}/${tag}\n`
     }
 }
 
@@ -38,7 +38,7 @@ const currentChangelog = fs.existsSync(mdDir);
 // const output = child.execSync('git log --format=%B%H--DELIMITER--').toString().split('--DELIMITER--\n')
 const output = child.execSync('git log --format=date={%as}author={%an}%B%H--DELIMITER--').toString().split('--DELIMITER--\n')
 
-const changelog = `\n# Versão ${version}\n`
+const changelog = `\n## Versão ${version}\n`
 
 if (!currentChangelog) {
     fs.writeFileSync(mdDir, changelog)
