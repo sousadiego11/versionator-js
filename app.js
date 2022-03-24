@@ -32,19 +32,25 @@ const mdCreator =  {
     }
 }
 
+const dateRegex = /(\d{4}-\d{2}-\d{2})/
+const typeRegex = /(feat|refactor|fix|docs|chore|perf|test):/
+const issueRegex = /\(#(.+)\)/
+const extractDate = /date={(.+?)}/
+const extractAuthor = /author={(.+?)}/
 
-const currentChangelog = fs.existsSync(mdDir);
+const currentChangelog = fs.existsSync(mdDir) ? fs.readFileSync(mdDir).toString().split('\n').filter((c) => c !== '') : null;
+const commitDates = currentChangelog && currentChangelog.filter((c) => c.match(dateRegex)).map((c) => dateRegex.exec(c)[1])
+console.log("🚀 ~ file: app.js ~ line 38 ~ commitDates", commitDates)
 
-// const output = child.execSync('git log --format=%B%H--DELIMITER--').toString().split('--DELIMITER--\n')
 const output = child.execSync('git log --format=date={%as}author={%an}%B%H--DELIMITER--').toString().split('--DELIMITER--\n')
 
-const changelog = `\n## Versão ${version}\n`
+const changelogNewVersion = `\n## Versão ${version}\n`
 
 if (!currentChangelog) {
-    fs.writeFileSync(mdDir, changelog)
+    fs.writeFileSync(mdDir, changelogNewVersion)
     
 } else {
-    fs.appendFileSync(mdDir, changelog)
+    fs.appendFileSync(mdDir, changelogNewVersion)
 }
 
 const execRegex = (validator, regex) => {
@@ -54,10 +60,10 @@ const execRegex = (validator, regex) => {
 const commits = output.map((c) => {
     const [bodyRaw, tag] = c.split('\n')
 
-    const type = execRegex(tag, /(feat|refactor|fix|docs|chore|perf|test):/.exec(bodyRaw))
-    const issue = execRegex(tag, /\(#(.+)\)/.exec(bodyRaw))
-    const date = execRegex(tag,/date={(.+?)}/.exec(bodyRaw))
-    const author = execRegex(tag,/author={(.+?)}/.exec(bodyRaw))
+    const type = execRegex(tag, typeRegex.exec(bodyRaw))
+    const issue = execRegex(tag, issueRegex.exec(bodyRaw))
+    const date = execRegex(tag, extractDate.exec(bodyRaw))
+    const author = execRegex(tag, extractAuthor.exec(bodyRaw))
     
     const body = bodyRaw.replace(type[0], '').replace(issue[0], '').replace(date[0], '').replace(author[0], '').trim()
     
