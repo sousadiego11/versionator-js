@@ -52,34 +52,39 @@ const latestCommitDate = currentContent && currentContent.filter((c) => c.match(
 const log = latestCommitDate !== '' ? `git log --after="${latestCommitDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
 const output = child.execSync(log).toString().split('--DELIMITER--\n')
 
-if (output.filter((a) => a !== '').length > 0) {
-    fs.writeSync(writable, changelogNewVersion, 0, changelogNewVersion.length, 0)
-    
-    const execRegex = (validator, regex) => {
-        return validator && regex ? regex : []
-    } 
-    
-    const commits = output.map((c) => {
-        const [bodyRaw, tag] = c.split('\n')
-    
-        const type = execRegex(tag, typeRegex.exec(bodyRaw))
-        const issue = execRegex(tag, issueRegex.exec(bodyRaw))
-        const date = execRegex(tag, extractDate.exec(bodyRaw))
-        const author = execRegex(tag, extractAuthor.exec(bodyRaw))
+function versionator() {
+    if (output.filter((a) => a !== '').length > 0) {
+        fs.writeSync(writable, changelogNewVersion, 0, changelogNewVersion.length, 0)
         
-        const body = bodyRaw.replace(type[0], '').replace(issue[0], '').replace(date[0], '').replace(author[0], '').trim()
+        const execRegex = (validator, regex) => {
+            return validator && regex ? regex : []
+        } 
         
-        return {body, tag, type: type[1], issue: issue[1], date: date[1], author: author[1]}
+        const commits = output.map((c) => {
+            const [bodyRaw, tag] = c.split('\n')
         
-    }).filter(i => i.tag)
-    
-    commits.forEach((c) => mdCreator[c.type](mdCreator.build(c)))
-    const changelogNewContent = mdCreator.feats.join('\n') + mdCreator.refactors.join('\n')
-    
-    fs.writeSync(writable, changelogNewContent, 0, changelogNewContent.length, 0)
-    
-    console.table(commits)
-    console.log(chalk.black.bgGreen.bold('Changelog atualizado com sucesso!'))
-} else {
-    console.log(chalk.black.bgYellow.bold('Changelog já está com os commits mais recentes!'))
+            const type = execRegex(tag, typeRegex.exec(bodyRaw))
+            const issue = execRegex(tag, issueRegex.exec(bodyRaw))
+            const date = execRegex(tag, extractDate.exec(bodyRaw))
+            const author = execRegex(tag, extractAuthor.exec(bodyRaw))
+            
+            const body = bodyRaw.replace(type[0], '').replace(issue[0], '').replace(date[0], '').replace(author[0], '').trim()
+            
+            return {body, tag, type: type[1], issue: issue[1], date: date[1], author: author[1]}
+            
+        }).filter(i => i.tag)
+        
+        commits.forEach((c) => mdCreator[c.type](mdCreator.build(c)))
+        const changelogNewContent = mdCreator.feats.join('\n') + mdCreator.refactors.join('\n')
+        
+        fs.writeSync(writable, changelogNewContent, 0, changelogNewContent.length, 0)
+        
+        console.table(commits)
+        console.log(chalk.black.bgGreen.bold('Changelog atualizado com sucesso!'))
+    } else {
+        console.log(chalk.black.bgYellow.bold('Changelog já está com os commits mais recentes!'))
+    }
 }
+versionator()
+
+module.exports = versionator
