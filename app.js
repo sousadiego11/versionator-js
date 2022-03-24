@@ -80,9 +80,9 @@ function versionator() {
         fs.writeSync(writable, changelogNewContent, 0, changelogNewContent.length, 0)
         
         console.table(commits)
-        console.log(chalk.black.bgGreen.bold('Changelog atualizado com sucesso!'))
+        console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
     } else {
-        console.log(chalk.black.bgYellow.bold('Changelog já está com os commits mais recentes!'))
+        console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
     }
 }
 
