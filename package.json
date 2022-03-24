@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/sousadiego11/versionator/issues"
   },
-  "homepage": "https://github.com/sousadiego11/versionator#readme"
+  "homepage": "https://github.com/sousadiego11/versionator#readme",
+  "dependencies": {
+    "chalk": "^2.4.1"
+  }
 }

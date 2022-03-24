@@ -1,6 +1,7 @@
 const fs = require('fs')
+const chalk = require('chalk')
 const child = require('child_process')
-const config = require("./changelog.config.json").repository
+const config = require("./changelog.config.json").commits_dir
 const { dirname } = require('path');
 const root = dirname(require.main.filename);
 const version = require(`${root}/package.json`).version
@@ -29,7 +30,7 @@ const mdCreator =  {
         this.chores.push(e)
     },
     build({ body, tag, issue, date, author }) {
-        return  issue ? `(${date}) **${author}**: ${issue} - ${body} [${tag}](${config}/${tag})\n` : `(${date}) **${author}**: ${body} [${tag}](${config}/${tag})\n`
+        return  issue ? `(${date}) **${author}**: #${issue} - ${body} [${tag}](${config}/${tag})\n` : `(${date}) **${author}**: ${body} [${tag}](${config}/${tag})\n`
     }
 }
 
@@ -78,7 +79,7 @@ if (output.filter((a) => a !== '').length > 0) {
     fs.writeSync(writable, changelogNewContent, 0, changelogNewContent.length, 0)
     
     console.table(commits)
-    console.log('Changelog atualizado com sucesso!')
+    console.log(chalk.black.bgGreen.bold('Changelog atualizado com sucesso!'))
 } else {
-    console.log('Changelog já está com os commits mais recentes!')
+    console.log(chalk.black.bgYellow.bold('Changelog já está com os commits mais recentes!'))
 }
