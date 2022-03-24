@@ -66,7 +66,7 @@ const commits = output.map((c) => {
 }).filter(i => i.tag)
 
 commits.forEach((c) => mdCreator[c.type](mdCreator.build(c)))
-const content = mdCreator.feats.join('\n')
+const content = mdCreator.feats.join('\n') + mdCreator.refactors.join('\n')
 
 fs.writeSync(fs.openSync(mdDir, 'a+'), content, 0, content.length, 0)
 
