@@ -1,5 +1,5 @@
 {
-  "name": "tests",
+  "name": "changelog-generator",
   "version": "1.0.0",
   "description": "",
   "main": "bla.js",
@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/diegodev.geomais/tests.git"
+    "url": "git+ssh://git@gitlab.com/diegodev.geomais/changelog-generator.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/diegodev.geomais/tests/issues"
+    "url": "https://gitlab.com/diegodev.geomais/changelog-generator/issues"
   },
-  "homepage": "https://gitlab.com/diegodev.geomais/tests#readme"
+  "homepage": "https://gitlab.com/diegodev.geomais/changelog-generator#readme"
 }
