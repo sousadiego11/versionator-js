@@ -28,7 +28,7 @@ const mdCreator =  {
         this.chores.push(e)
     },
     build({ body, tag, issue }) {
-        return  issue ? `(${issue}) - ${body} ${config}/${tag}\n` : `${body} ${config}/${tag}\n`
+        return  issue ? `[${issue}](${config}/${tag}) - ${body} ${config}/${tag}\n` : `${body} ${config}/${tag}\n`
     }
 }
 
@@ -58,6 +58,8 @@ const commits = output.map((c) => {
 commits.forEach((c) => mdCreator[c.type](mdCreator.build(c)))
 const content = mdCreator.feats.join('\n')
 
-fs.appendFileSync(mdDir, content)
+// fs.appendFileSync(mdDir, content)
+const fb = fs.openSync(mdDir, 'a+')
+fs.writeSync(fb, content, 0, content.length, 0)
 
 console.table(commits)
