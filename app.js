@@ -3,6 +3,7 @@ const child = require('child_process')
 const config = require("./changelog.config.json").repository
 const { dirname } = require('path');
 const root = dirname(require.main.filename);
+const version = require(`${root}/package.json`).version
 const mdDir = `${root}/CHANGELOG.md`
 
 const mdCreator =  {
@@ -27,15 +28,15 @@ const mdCreator =  {
         this.chores.push(e)
     },
     build({ body, tag, issue }) {
-        return `(${issue}) - ${body} ${config}/${tag}\n`
+        return  issue ? `(${issue}) - ${body} ${config}/${tag}\n` : `${body} ${config}/${tag}\n`
     }
 }
 
 
 const currentChangelog = fs.existsSync(mdDir);
 const output = child.execSync('git log --format=%B%H--DELIMITER--').toString().split('--DELIMITER--\n')
-const version = JSON.parse(fs.readFileSync(`${root}/package.json`)).version
-const changelog = `\n\n# Versão ${version}\n\n`
+
+const changelog = `\n# Versão ${version}\n\n`
 
 if (!currentChangelog) {
     fs.writeFileSync(mdDir, changelog)
@@ -47,7 +48,7 @@ if (!currentChangelog) {
 const commits = output.map((c) => {
     const [body, tag] = c.split('\n')
 
-    const type = tag ? /(feat):/.exec(body) : []
+    const type = tag && /(feat|refactor):/.exec(body) ? /(feat|refactor):/.exec(body) : []
     const issue = tag && /\(#(.+)\)/.exec(body) ? /\(#(.+)\)/.exec(body) : []
 
     return {body, tag, type: type[1], issue: issue[1]}
@@ -55,7 +56,6 @@ const commits = output.map((c) => {
 }).filter(i => i.tag)
 
 commits.forEach((c) => mdCreator[c.type](mdCreator.build(c)))
-
 const content = mdCreator.feats.join('\n')
 
 fs.appendFileSync(mdDir, content)

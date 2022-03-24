@@ -1,20 +1,22 @@
 {
-  "name": "changelog-generator",
+  "name": "versionator",
   "version": "1.0.0",
-  "description": "",
-  "main": "bla.js",
+  "description": "Create dynamic changelogs for your project!",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "changelog": "node app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/diegodev.geomais/changelog-generator.git"
+    "url": "git+https://github.com/sousadiego11/versionator.git"
   },
-  "author": "",
+  "keywords": [
+    "changelog"
+  ],
+  "author": "Diego Sousa",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/diegodev.geomais/changelog-generator/issues"
+    "url": "https://github.com/sousadiego11/versionator/issues"
   },
-  "homepage": "https://gitlab.com/diegodev.geomais/changelog-generator#readme"
+  "homepage": "https://github.com/sousadiego11/versionator#readme"
 }
