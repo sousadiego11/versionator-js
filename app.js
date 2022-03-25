@@ -8,12 +8,24 @@ const version = require(`${root}/package.json`).version
 const mdDir = `${root}/CHANGELOG.md`
 const writable = fs.openSync(mdDir, 'a+')
 
+const targets = {
+    feat: 'feats',
+    fix: 'fixes',
+    refactor: 'refactors',
+    docs: 'docums',
+    chore: 'chores',
+    perf: 'perfs',
+    tests: 'tests',
+}
+
 const mdCreator =  {
     feats: ['### ✨**Features**:\n'],
-    fixes: ['### **Fixes**:\n'],
+    fixes: ['### 🐛**Fixes**:\n'],
     refactors: ['### 🔥**Refactors**:\n'],
-    docums: ['### **Docs**:\n'],
-    chores: ['### **Chore**:\n'],
+    docums: ['### 🐛**Docs**:\n'],
+    chores: ['### 🔧**Chores**:\n'],
+    perfs: ['### ⚡️**Perfs**:\n'],
+    tests: ['### 🧪**Tests**:\n'],
     feat(e) {
         this.feats.push(e)
     },
@@ -29,6 +41,12 @@ const mdCreator =  {
     chore(e) {
         this.chores.push(e)
     },
+    perf(e) {
+        this.perfs.push(e)
+    },
+    test(e) {
+        this.tests.push(e)
+    },
     build({ body, tag, issue, date, author }) {
         return  issue ? `(${date}) **${author}**: #${issue} - ${body} [${tag}](${config}/${tag})\n` : `(${date}) **${author}**: ${body} [${tag}](${config}/${tag})\n`
     }
@@ -42,14 +60,15 @@ const extractAuthor = /author={(.+?)}/
 const changelogNewVersion = `\n## Versão ${version}\n`
 
 const currentContent = fs.existsSync(mdDir) ? fs.readFileSync(mdDir).toString().split('\n').filter((c) => c !== '') : null;
-const latestCommitDate = currentContent && currentContent.filter((c) => c.match(dateRegex)).map((c) => dateRegex.exec(c)[1]).reduce((acc, curr) => {
+const dates = currentContent && currentContent.filter((c) => c.match(dateRegex)).map((d) => dateRegex.exec(d)[1])
+const latestCommitDate = dates.reduce((acc, curr) => {
     if (acc === '') acc = curr
     else if (acc < curr) acc = curr
     else if (acc > curr) acc = acc
     return acc
 }, '')
 
-const log = latestCommitDate !== '' ? `git log --after="${latestCommitDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
+const log = latestCommitDate !== '' ? `git log --after=${latestCommitDate} --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
 const output = child.execSync(log).toString().split('--DELIMITER--\n')
 
 function versionator() {
@@ -70,14 +89,15 @@ function versionator() {
             
             const body = bodyRaw.replace(type[0], '').replace(issue[0], '').replace(date[0], '').replace(author[0], '').trim()
             
-            return {body, tag, type: type[1], issue: issue[1], date: date[1], author: author[1]}
+            return {body, tag, type: type[1], issue: issue[1], date: date[1], author: author[1], target: targets[type[1]]}
             
         }).filter(i => i.tag)
         
-        commits.forEach((c) => mdCreator[c.type](mdCreator.build(c)))
-        const changelogNewContent = mdCreator.feats.join('\n') + mdCreator.refactors.join('\n')
-        
-        fs.writeSync(writable, changelogNewContent, 0, changelogNewContent.length, 0)
+        commits.forEach((c) => c.type && mdCreator[c.type](mdCreator.build(c)))
+        let finalContent = ''
+        Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
+
+        fs.writeSync(writable, finalContent, 0, finalContent.length, 0)
         
         console.table(commits)
         console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
@@ -85,5 +105,5 @@ function versionator() {
         console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
     }
 }
-
+versionator()
 module.exports = versionator
