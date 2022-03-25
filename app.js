@@ -25,7 +25,7 @@ const mdCreator =  {
     feats: ['### ✨**Features**:\n'],
     fixes: ['### 🐛**Fixes**:\n'],
     refactors: ['### 🔥**Refactors**:\n'],
-    docums: ['### 🐛**Docs**:\n'],
+    docums: ['### 📝**Docs**:\n'],
     chores: ['### 🔧**Chores**:\n'],
     perfs: ['### ⚡️**Perfs**:\n'],
     tests: ['### 🧪**Tests**:\n'],
@@ -55,19 +55,12 @@ const mdCreator =  {
     }
 }
 
-const dateRegex = /(\d{4}-\d{2}-\d{2})/
-const typeRegex = /(feat|refactor|fix|docs|chore|perf|test):/
-const issueRegex = /\(#(.+)\)/
-const extractDate = /date={(.+?)}/
-const extractAuthor = /author={(.+?)}/
-const changelogNewVersion = `\n## Versão ${version}\n`
-
 const execRegex = (validator, regex) => {
     return validator && regex ? regex : []
 } 
 
 const currentContent = existsChangelog ? fs.readFileSync(mdDir).toString().split('\n').filter((c) => c !== '') : null;
-const dates = currentContent && currentContent.filter((c) => c.match(dateRegex)).map((d) => dateRegex.exec(d)[1])
+const dates = currentContent && currentContent.filter((c) => c.match(/(\d{4}-\d{2}-\d{2})/)).map((d) => /(\d{4}-\d{2}-\d{2})/.exec(d)[1])
 const latestCommitDate = dates?.reduce((acc, curr) => {
     if (acc === '') acc = curr
     else if (acc < curr) acc = curr
@@ -81,20 +74,23 @@ const output = child.execSync(log).toString().split('--DELIMITER--\n')
 async function versionator() {
     if (output.filter((a) => a !== '').length > 0) {
 
-        const reader = existsChangelog ? fs.createReadStream(mdDir) : new Readable()
-        if (existsChangelog) await unlinkPromised(mdDir)
+        const readable = new Readable()
+        if (existsChangelog) readable.push(fs.readFileSync(mdDir, 'utf-8'))
 
-        const writer = fs.createWriteStream(`${root}/CHANGELOG.md`, 'utf8')
+        const writable = fs.createWriteStream(existsChangelog ? `${root}/CHANGELOG2.md` : mdDir, {
+            flags: 'a+'
+        })
+
         const changelogNewVersionRead = new Readable()
         const finalContentRead = new Readable()
-
+        
         const commits = output.map((c) => {
             const [bodyRaw, tag] = c.split('\n')
-        
-            const type = execRegex(tag, typeRegex.exec(bodyRaw))
-            const issue = execRegex(tag, issueRegex.exec(bodyRaw))
-            const date = execRegex(tag, extractDate.exec(bodyRaw))
-            const author = execRegex(tag, extractAuthor.exec(bodyRaw))
+            
+            const type = execRegex(tag, /(feat|refactor|fix|docs|chore|perf|test):/.exec(bodyRaw))
+            const issue = execRegex(tag, /\(#(.+)\)/.exec(bodyRaw))
+            const date = execRegex(tag, /date={(.+?)}/.exec(bodyRaw))
+            const author = execRegex(tag, /author={(.+?)}/.exec(bodyRaw))
             
             const body = bodyRaw.replace(type[0], '').replace(issue[0], '').replace(date[0], '').replace(author[0], '').trim()
             
@@ -105,20 +101,24 @@ async function versionator() {
         commits.forEach((c) => c.type && mdCreator[c.type](mdCreator.build(c)))
         let finalContent = ''
         Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
-
-
-        changelogNewVersionRead.push(changelogNewVersion)
+        
+        
+        changelogNewVersionRead.push(`\n## Versão ${version}\n`)
         finalContentRead.push(finalContent)
         
-        changelogNewVersionRead.pipe(writer)
-        finalContentRead.pipe(writer)
-        reader.pipe(writer)
+        changelogNewVersionRead.pipe(writable)
+        finalContentRead.pipe(writable)
+        readable.pipe(writable)
         
         changelogNewVersionRead.push(null)
         finalContentRead.push(null)
-        reader.push(null)
-
+        readable.push(null)
         
+        if (existsChangelog) {
+            await unlinkPromised(mdDir)
+            fs.renameSync(`${root}/CHANGELOG2.md`, mdDir)
+        }
+
         console.table(commits)
         console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
     } else {
