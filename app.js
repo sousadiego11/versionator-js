@@ -2,11 +2,11 @@ const { dirname } = require('path');
 const root = dirname(require.main.filename);
 const fs = require('fs')
 const chalk = require('chalk')
-const child = require('child_process')
+const child = require('child_process');
+const { Readable } = require('stream');
 const config = require(`${root}/changelog.config.json`).commits_dir
 const version = require(`${root}/package.json`).version
 const mdDir = `${root}/CHANGELOG.md`
-const writable = fs.openSync(mdDir, 'a+')
 
 const targets = {
     feat: 'feats',
@@ -61,24 +61,34 @@ const changelogNewVersion = `\n## Versão ${version}\n`
 
 const currentContent = fs.existsSync(mdDir) ? fs.readFileSync(mdDir).toString().split('\n').filter((c) => c !== '') : null;
 const dates = currentContent && currentContent.filter((c) => c.match(dateRegex)).map((d) => dateRegex.exec(d)[1])
-const latestCommitDate = dates.reduce((acc, curr) => {
+const latestCommitDate = dates?.reduce((acc, curr) => {
     if (acc === '') acc = curr
     else if (acc < curr) acc = curr
     else if (acc > curr) acc = acc
     return acc
 }, '')
+console.log("🚀 ~ file: app.js ~ line 69 ~ latestCommitDate ~ latestCommitDate", latestCommitDate)
 
-const log = latestCommitDate !== '' ? `git log --after="${latestCommitDate} 23:59" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
+const log = latestCommitDate && latestCommitDate !== '' ? `git log --after="${latestCommitDate} 23:59" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
 const output = child.execSync(log).toString().split('--DELIMITER--\n')
+
+console.log("🚀 ~ file: app.js ~ line 62 ~ currentContent", currentContent)
+console.log("🚀 ~ file: app.js ~ line 64 ~ dates", dates)
+console.log("🚀 ~ file: app.js ~ line 74 ~ log", log)
+console.log("🚀 ~ file: app.js ~ line 74 ~ output", output)
 
 function versionator() {
     if (output.filter((a) => a !== '').length > 0) {
-        fs.writeSync(writable, changelogNewVersion, 0, changelogNewVersion.length, 0)
+        // const reader = fs.createReadStream(mdDir)
+        const writer = fs.createWriteStream(`${root}/CHANGELOG2.md`, 'utf8')
+        // fs.writeSync(writable, changelogNewVersion, 0, changelogNewVersion.length, 0)
         
         const execRegex = (validator, regex) => {
             return validator && regex ? regex : []
         } 
-        
+        const changelogNewVersionRead = new Readable()
+        const finalContentRead = new Readable()
+
         const commits = output.map((c) => {
             const [bodyRaw, tag] = c.split('\n')
         
@@ -97,7 +107,17 @@ function versionator() {
         let finalContent = ''
         Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
 
-        fs.writeSync(writable, finalContent, 0, finalContent.length, 0)
+
+        changelogNewVersionRead.push(changelogNewVersion)
+        finalContentRead.push(finalContent)
+        
+        changelogNewVersionRead.pipe(writer)
+        finalContentRead.pipe(writer)
+        // reader.pipe(writer)
+        
+        changelogNewVersionRead.push(null)
+        finalContentRead.push(null)
+
         
         console.table(commits)
         console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
@@ -105,4 +125,5 @@ function versionator() {
         console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
     }
 }
+versionator()
 module.exports = versionator
