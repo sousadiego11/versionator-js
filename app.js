@@ -68,7 +68,7 @@ const latestCommitDate = dates.reduce((acc, curr) => {
     return acc
 }, '')
 
-const log = latestCommitDate !== '' ? `git log --after=${latestCommitDate} --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
+const log = latestCommitDate !== '' ? `git log --after="${latestCommitDate} 23:59" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
 const output = child.execSync(log).toString().split('--DELIMITER--\n')
 
 function versionator() {
