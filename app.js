@@ -51,38 +51,37 @@ const mdCreator =  {
         this.tests.push(e)
     },
     build({ body, tag, issue, date, author }) {
-        return  issue ? `(${date}) **${author}**: #${issue} - ${body} [${tag}](${config}/${tag})\n` : `(${date}) **${author}**: ${body} [${tag}](${config}/${tag})\n`
+        return  issue ? `${date} **${author}**: #${issue} - ${body} [${tag}](${config}/${tag})\n` : `${date} **${author}**: ${body} [${tag}](${config}/${tag})\n`
     }
 }
 
 const execRegex = (validator, regex) => {
     return validator && regex ? regex : []
-} 
+}
 
-const currentContent = existsChangelog ? fs.readFileSync(mdDir).toString().split('\n').filter((c) => c !== '') : null;
-const dates = currentContent && currentContent.filter((c) => c.match(/(\d{4}-\d{2}-\d{2})/)).map((d) => /(\d{4}-\d{2}-\d{2})/.exec(d)[1])
-const latestCommitDate = dates?.reduce((acc, curr) => {
-    if (acc === '') acc = curr
-    else if (acc < curr) acc = curr
-    else if (acc > curr) acc = acc
-    return acc
-}, '')
+const datergx = /([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?/m
+const text = existsChangelog && fs.readFileSync(mdDir).toString().split('\n').join('')
+const foundDate = existsChangelog ? datergx.exec(text)[0] : ''
+const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
 
-const log = latestCommitDate && latestCommitDate !== '' ? `git log --after="${latestCommitDate} 23:59" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
+const log = foundDate && foundDate !== '' ? `git log --after="${foundDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
 const output = child.execSync(log).toString().split('--DELIMITER--\n')
 
 async function versionator() {
     if (output.filter((a) => a !== '').length > 0) {
-
         const readable = new Readable()
-        if (existsChangelog) readable.push(fs.readFileSync(mdDir, 'utf-8'))
-
-        const writable = fs.createWriteStream(existsChangelog ? `${root}/CHANGELOG2.md` : mdDir, {
-            flags: 'a+'
-        })
-
         const changelogNewVersionRead = new Readable()
         const finalContentRead = new Readable()
+
+        const endStreams = () => {
+            changelogNewVersionRead.push(null)
+            finalContentRead.push(null)
+            readable.push(null)
+        }
+
+        if (existsChangelog) readable.push(fs.readFileSync(mdDir, 'utf-8'))
+
+        
         
         const commits = output.map((c) => {
             const [bodyRaw, tag] = c.split('\n')
@@ -98,21 +97,29 @@ async function versionator() {
             
         }).filter(i => i.tag)
         
+        if (commits.length === 1 && !commits[0].type) {
+            console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
+            endStreams()
+            return
+        }
+        
         commits.forEach((c) => c.type && mdCreator[c.type](mdCreator.build(c)))
         let finalContent = ''
         Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
         
         
-        changelogNewVersionRead.push(`\n## Versão ${version}\n`)
+        const writable = fs.createWriteStream(existsChangelog ? `${root}/CHANGELOG2.md` : mdDir, {
+            flags: 'a+'
+        })
+        
+        changelogNewVersionRead.push(`<!-- ${mostRecentDate} -->\n## Versão ${version} \n`)
         finalContentRead.push(finalContent)
         
         changelogNewVersionRead.pipe(writable)
         finalContentRead.pipe(writable)
         readable.pipe(writable)
         
-        changelogNewVersionRead.push(null)
-        finalContentRead.push(null)
-        readable.push(null)
+        endStreams()
         
         if (existsChangelog) {
             await unlinkPromised(mdDir)
