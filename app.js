@@ -80,6 +80,7 @@ const output = child.execSync(log).toString().split('--DELIMITER--\n')
 
 async function versionator() {
     if (output.filter((a) => a !== '').length > 0) {
+
         const reader = existsChangelog ? fs.createReadStream(mdDir) : new Readable()
         if (existsChangelog) await unlinkPromised(mdDir)
 
@@ -115,6 +116,7 @@ async function versionator() {
         
         changelogNewVersionRead.push(null)
         finalContentRead.push(null)
+        reader.push(null)
 
         
         console.table(commits)
