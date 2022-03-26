@@ -9,6 +9,7 @@ const config = require(`${root}/changelog.config.json`).commits_dir
 const version = require(`${root}/package.json`).version
 const mdDir = `${root}/CHANGELOG.md`
 const unlinkPromised = promisify(fs.unlink)
+const renamePromised = promisify(fs.rename)
 const existsChangelog = fs.existsSync(mdDir)
 
 const targets = {
@@ -59,7 +60,8 @@ const execRegex = (validator, regex) => {
     return validator && regex ? regex : []
 }
 
-const text = existsChangelog && fs.readFileSync(mdDir).toString().split('\n').join('')
+const oldContent = existsChangelog ? fs.readFileSync(mdDir, 'utf8') : '' 
+const text = existsChangelog && oldContent.split('\n').join('')
 const foundDate = existsChangelog ? /@(.+)@/m.exec(text)[0] : ''
 const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
 
@@ -68,20 +70,21 @@ const output = child.execSync(log).toString().split('--DELIMITER--\n')
 
 async function versionator() {
     if (output.filter((a) => a !== '').length > 0) {
-        const readable = new Readable()
-        const changelogNewVersionRead = new Readable()
-        const finalContentRead = new Readable()
+
+        const readableOldContent = new Readable()
+        const readableNewVersion = new Readable()
+        const readableNewContent = new Readable()
 
         const endStreams = () => {
-            changelogNewVersionRead.push(null)
-            finalContentRead.push(null)
-            readable.push(null)
+            readableNewVersion.push(null)
+            readableNewContent.push(null)
+            readableOldContent.push(null)
         }
 
-        if (existsChangelog) readable.push(fs.readFileSync(mdDir, 'utf-8'))
+        const writable = fs.createWriteStream(existsChangelog ? `${root}/CHANGELOG2.md` : mdDir, {
+            flags: 'a+'
+        })
 
-        
-        
         const commits = output.map((c) => {
             const [bodyRaw, tag] = c.split('\n')
             
@@ -106,25 +109,21 @@ async function versionator() {
         let finalContent = ''
         Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
         
+        readableNewVersion.push(`<!-- @${mostRecentDate}@ -->\n## Versão ${version} \n`)
+        readableNewContent.push(finalContent)
+        readableOldContent.push(oldContent)
         
-        const writable = fs.createWriteStream(existsChangelog ? `${root}/CHANGELOG2.md` : mdDir, {
-            flags: 'a+'
-        })
-        
-        changelogNewVersionRead.push(`<!-- @${mostRecentDate}@ -->\n## Versão ${version} \n`)
-        finalContentRead.push(finalContent)
-        
-        changelogNewVersionRead.pipe(writable)
-        finalContentRead.pipe(writable)
-        readable.pipe(writable)
-        
+        readableNewVersion.pipe(writable)
+        readableNewContent.pipe(writable)
+        readableOldContent.pipe(writable)
+
         endStreams()
         
         if (existsChangelog) {
             await unlinkPromised(mdDir)
-            fs.renameSync(`${root}/CHANGELOG2.md`, mdDir)
+            await renamePromised(`${root}/CHANGELOG2.md`, mdDir)
         }
-
+        
         console.table(commits)
         console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
     } else {
