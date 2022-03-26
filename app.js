@@ -59,12 +59,11 @@ const execRegex = (validator, regex) => {
     return validator && regex ? regex : []
 }
 
-const datergx = /([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?/m
 const text = existsChangelog && fs.readFileSync(mdDir).toString().split('\n').join('')
-const foundDate = existsChangelog ? datergx.exec(text)[0] : ''
+const foundDate = existsChangelog ? /@(.+)@/m.exec(text)[0] : ''
 const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
 
-const log = foundDate && foundDate !== '' ? `git log --after="${foundDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
+const log = foundDate && foundDate !== '' ? `git log --since="${foundDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
 const output = child.execSync(log).toString().split('--DELIMITER--\n')
 
 async function versionator() {
@@ -112,7 +111,7 @@ async function versionator() {
             flags: 'a+'
         })
         
-        changelogNewVersionRead.push(`<!-- ${mostRecentDate} -->\n## Versão ${version} \n`)
+        changelogNewVersionRead.push(`<!-- @${mostRecentDate}@ -->\n## Versão ${version} \n`)
         finalContentRead.push(finalContent)
         
         changelogNewVersionRead.pipe(writable)
