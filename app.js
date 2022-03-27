@@ -62,27 +62,36 @@ const execRegex = (validator, regex) => {
 }
 
 async function versionator() {
-    const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
-
-    const readableOldContent = existsChangelog ? fs.createReadStream(mdDir, 'utf8') : new Readable({
+    
+    const readableOldChangelog = existsChangelog ? fs.createReadStream(mdDir, 'utf8') : new Readable({
         read: function() {
             this.push(null)
         }
     })
-    
-    //TODO: text Vai ser pego pela readableOldContent, e não readFileSync.
-    //TODO: apenas a primeira pipeline faz o pipe do conteúdo, ajustar.
-    const text = existsChangelog && fs.readFileSync(mdDir).toString().split('\n').join('')
 
+    const streamToString = (stream) => {
+        const chunks = [];
+        return new Promise((resolve, reject) => {
+          stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+          stream.on('error', (err) => reject(err));
+          stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+        })
+      }
+    
+
+    const oldContent = await streamToString(readableOldChangelog)
+    
+    const text = existsChangelog && oldContent.split('\n').join('')
+    
     const foundDate = existsChangelog ? /@(.+)@/m.exec(text)[1] : ''
     const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
     
     const log = foundDate && foundDate !== '' ? `git log --since="${foundDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
     const output = child.execSync(log).toString().split('--DELIMITER--\n')
-
+    
     if (output.filter((a) => a !== '').length > 0) {
         let finalContent = ''
-
+        
         const commits = output.map((c) => {
             const [bodyRaw, tag] = c.split('\n')
             
@@ -97,7 +106,7 @@ async function versionator() {
             
         }).filter(i => i.tag)
         
-        if (commits.length === 1 && !commits[0].type) {
+        if (commits.every((c) => !c.type)) {
             console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
             return
         }
@@ -105,33 +114,43 @@ async function versionator() {
         commits.forEach((c) => c.type && mdCreator[c.type](mdCreator.build(c)))
         Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
         
-        const writable = fs.createWriteStream(newDir, {
-            flags: 'a+',
-            encoding: 'utf8'
-        })
-
         const readableNewVersion = new Readable({
             read: function() {
                 this.push(`<!-- @${mostRecentDate}@ -->\n## Versão ${version} \n`)
                 this.push(null)
             }
         })
-
+        
         const readableNewContent = new Readable({
             read: function() {
                 this.push(finalContent)
                 this.push(null)
             }
         })
-
-        await pipelinePromised(readableNewVersion, writable)
-        console.log("🚀 ~ file: app.js ~ line 135 ~ versionator ~ readableNewVersion")
-
-        await pipelinePromised(readableNewContent, writable)
-        console.log("🚀 ~ file: app.js ~ line 137 ~ versionator ~ readableNewContent")
-
-        await pipelinePromised(readableOldContent, writable)
-        console.log("🚀 ~ file: app.js ~ line 139 ~ versionator ~ readableOldContent")
+        
+        const readableOldContent = new Readable({
+            read: function() {
+                this.push(oldContent)
+                this.push(null)
+            }
+        })
+        
+        const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
+        
+        await pipelinePromised(readableNewVersion, fs.createWriteStream(newDir, {
+            flags: 'a+',
+            encoding: 'utf8'
+        }))
+        
+        await pipelinePromised(readableNewContent, fs.createWriteStream(newDir, {
+            flags: 'a+',
+            encoding: 'utf8'
+        }))
+        
+        await pipelinePromised(readableOldContent, fs.createWriteStream(newDir, {
+            flags: 'a+',
+            encoding: 'utf8'
+        }))
         
         if (existsChangelog) {
             await unlinkPromised(mdDir)
