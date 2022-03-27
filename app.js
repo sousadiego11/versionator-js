@@ -163,5 +163,4 @@ async function versionator() {
         console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
     }
 }
-versionator()
 module.exports = versionator
