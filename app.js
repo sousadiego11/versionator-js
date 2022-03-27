@@ -12,6 +12,7 @@ const unlinkPromised = promisify(fs.unlink)
 const renamePromised = promisify(fs.rename)
 const pipelinePromised = promisify(pipeline)
 const existsChangelog = fs.existsSync(mdDir)
+const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
 
 const targets = {
     feat: 'feats',
@@ -115,27 +116,25 @@ async function versionator() {
         Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
         
         const readableNewVersion = new Readable({
-            read: function() {
+            read() {
                 this.push(`<!-- @${mostRecentDate}@ -->\n## Versão ${version} \n`)
                 this.push(null)
             }
         })
         
         const readableNewContent = new Readable({
-            read: function() {
+            read() {
                 this.push(finalContent)
                 this.push(null)
             }
         })
         
         const readableOldContent = new Readable({
-            read: function() {
+            read() {
                 this.push(oldContent)
                 this.push(null)
             }
         })
-        
-        const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
         
         await pipelinePromised(readableNewVersion, fs.createWriteStream(newDir, {
             flags: 'a+',
