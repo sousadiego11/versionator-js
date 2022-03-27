@@ -3,12 +3,14 @@ const root = dirname(require.main.filename);
 const fs = require('fs')
 const chalk = require('chalk')
 const child = require('child_process');
-const { Readable } = require('stream');
+const { Readable, pipeline, Transform } = require('stream');
 const { promisify } = require('util');
 const config = require(`${root}/changelog.config.json`).commits_dir
 const version = require(`${root}/package.json`).version
 const mdDir = `${root}/CHANGELOG.md`
 const unlinkPromised = promisify(fs.unlink)
+const renamePromised = promisify(fs.rename)
+const pipelinePromised = promisify(pipeline)
 const existsChangelog = fs.existsSync(mdDir)
 
 const targets = {
@@ -59,29 +61,28 @@ const execRegex = (validator, regex) => {
     return validator && regex ? regex : []
 }
 
-const text = existsChangelog && fs.readFileSync(mdDir).toString().split('\n').join('')
-const foundDate = existsChangelog ? /@(.+)@/m.exec(text)[0] : ''
-const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
-
-const log = foundDate && foundDate !== '' ? `git log --since="${foundDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
-const output = child.execSync(log).toString().split('--DELIMITER--\n')
-
 async function versionator() {
-    if (output.filter((a) => a !== '').length > 0) {
-        const readable = new Readable()
-        const changelogNewVersionRead = new Readable()
-        const finalContentRead = new Readable()
+    const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
 
-        const endStreams = () => {
-            changelogNewVersionRead.push(null)
-            finalContentRead.push(null)
-            readable.push(null)
+    const readableOldContent = existsChangelog ? fs.createReadStream(mdDir, 'utf8') : new Readable({
+        read: function() {
+            this.push(null)
         }
+    })
+    
+    //TODO: text Vai ser pego pela readableOldContent, e não readFileSync.
+    //TODO: apenas a primeira pipeline faz o pipe do conteúdo, ajustar.
+    const text = existsChangelog && fs.readFileSync(mdDir).toString().split('\n').join('')
 
-        if (existsChangelog) readable.push(fs.readFileSync(mdDir, 'utf-8'))
+    const foundDate = existsChangelog ? /@(.+)@/m.exec(text)[1] : ''
+    const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
+    
+    const log = foundDate && foundDate !== '' ? `git log --since="${foundDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
+    const output = child.execSync(log).toString().split('--DELIMITER--\n')
 
-        
-        
+    if (output.filter((a) => a !== '').length > 0) {
+        let finalContent = ''
+
         const commits = output.map((c) => {
             const [bodyRaw, tag] = c.split('\n')
             
@@ -98,33 +99,45 @@ async function versionator() {
         
         if (commits.length === 1 && !commits[0].type) {
             console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
-            endStreams()
             return
         }
         
         commits.forEach((c) => c.type && mdCreator[c.type](mdCreator.build(c)))
-        let finalContent = ''
         Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
         
-        
-        const writable = fs.createWriteStream(existsChangelog ? `${root}/CHANGELOG2.md` : mdDir, {
-            flags: 'a+'
+        const writable = fs.createWriteStream(newDir, {
+            flags: 'a+',
+            encoding: 'utf8'
         })
-        
-        changelogNewVersionRead.push(`<!-- @${mostRecentDate}@ -->\n## Versão ${version} \n`)
-        finalContentRead.push(finalContent)
-        
-        changelogNewVersionRead.pipe(writable)
-        finalContentRead.pipe(writable)
-        readable.pipe(writable)
-        
-        endStreams()
+
+        const readableNewVersion = new Readable({
+            read: function() {
+                this.push(`<!-- @${mostRecentDate}@ -->\n## Versão ${version} \n`)
+                this.push(null)
+            }
+        })
+
+        const readableNewContent = new Readable({
+            read: function() {
+                this.push(finalContent)
+                this.push(null)
+            }
+        })
+
+        await pipelinePromised(readableNewVersion, writable)
+        console.log("🚀 ~ file: app.js ~ line 135 ~ versionator ~ readableNewVersion")
+
+        await pipelinePromised(readableNewContent, writable)
+        console.log("🚀 ~ file: app.js ~ line 137 ~ versionator ~ readableNewContent")
+
+        await pipelinePromised(readableOldContent, writable)
+        console.log("🚀 ~ file: app.js ~ line 139 ~ versionator ~ readableOldContent")
         
         if (existsChangelog) {
             await unlinkPromised(mdDir)
-            fs.renameSync(`${root}/CHANGELOG2.md`, mdDir)
+            await renamePromised(`${root}/CHANGELOG2.md`, mdDir)
         }
-
+        
         console.table(commits)
         console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
     } else {
