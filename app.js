@@ -12,6 +12,7 @@ const unlinkPromised = promisify(fs.unlink)
 const renamePromised = promisify(fs.rename)
 const pipelinePromised = promisify(pipeline)
 const existsChangelog = fs.existsSync(mdDir)
+const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
 
 const targets = {
     feat: 'feats',
@@ -86,14 +87,14 @@ async function versionator() {
     const foundDate = existsChangelog ? /@(.+)@/m.exec(text)[1] : ''
     const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
     
-    const log = foundDate && foundDate !== '' ? `git log --since="${foundDate}" --format=date={%as}author={%an}%B%H--DELIMITER--` : `git log --format=date={%as}author={%an}%B%H--DELIMITER--` 
+    const log = foundDate && foundDate !== '' ? `git log --since="${foundDate}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` 
     const output = child.execSync(log).toString().split('--DELIMITER--\n')
     
     if (output.filter((a) => a !== '').length > 0) {
         let finalContent = ''
         
         const commits = output.map((c) => {
-            const [bodyRaw, tag] = c.split('\n')
+            const [bodyRaw, tag] = c.split('--DIVISOR--')
             
             const type = execRegex(tag, /(feat|refactor|fix|docs|chore|perf|test):/.exec(bodyRaw))
             const issue = execRegex(tag, /\(#(.+)\)/.exec(bodyRaw))
@@ -115,27 +116,25 @@ async function versionator() {
         Object.values(targets).forEach((t) =>  mdCreator[t].length > 1 ? finalContent += mdCreator[t].join('\n') : null)
         
         const readableNewVersion = new Readable({
-            read: function() {
+            read() {
                 this.push(`<!-- @${mostRecentDate}@ -->\n## Versão ${version} \n`)
                 this.push(null)
             }
         })
         
         const readableNewContent = new Readable({
-            read: function() {
+            read() {
                 this.push(finalContent)
                 this.push(null)
             }
         })
         
         const readableOldContent = new Readable({
-            read: function() {
+            read() {
                 this.push(oldContent)
                 this.push(null)
             }
         })
-        
-        const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
         
         await pipelinePromised(readableNewVersion, fs.createWriteStream(newDir, {
             flags: 'a+',
