@@ -84,10 +84,12 @@ async function versionator() {
     
     const text = existsChangelog && oldContent.split('\n').join('')
     
-    const foundDate = existsChangelog ? /@(.+?)@/m.exec(text)[1] : ''
+    const foundDate = existsChangelog ? new Date(/@(.+?)@/m.exec(text)[1]) : ''
+    foundDate.setSeconds(foundDate.getSeconds() + 1)
+    
     const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
     
-    const log = foundDate && foundDate !== '' ? `git log --since="${foundDate}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` 
+    const log = foundDate && foundDate !== '' ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` 
     const output = child.execSync(log).toString().split('--DELIMITER--\n')
     
     if (output.filter((a) => a !== '').length > 0) {
