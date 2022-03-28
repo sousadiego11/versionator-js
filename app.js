@@ -84,7 +84,7 @@ async function versionator() {
     
     const text = existsChangelog && oldContent.split('\n').join('')
     
-    const foundDate = existsChangelog ? /@(.+)@/m.exec(text)[1] : ''
+    const foundDate = existsChangelog ? /@(.+?)@/m.exec(text)[1] : ''
     const mostRecentDate = child.execSync('git log -1 --format=%aI').toString()
     
     const log = foundDate && foundDate !== '' ? `git log --since="${foundDate}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` 
@@ -96,7 +96,7 @@ async function versionator() {
         const commits = output.map((c) => {
             const [bodyRaw, tag] = c.split('--DIVISOR--')
             
-            const type = execRegex(tag, /(feat|refactor|fix|docs|chore|perf|test):/.exec(bodyRaw))
+            const type = execRegex(tag, /(feat|refactor|fix|docs|chore|perf|test)(\(.+\))?:/.exec(bodyRaw))
             const issue = execRegex(tag, /\(#(.+)\)/.exec(bodyRaw))
             const date = execRegex(tag, /date={(.+?)}/.exec(bodyRaw))
             const author = execRegex(tag, /author={(.+?)}/.exec(bodyRaw))
