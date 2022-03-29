@@ -23,9 +23,9 @@ This package uses [conventional commits](https://www.conventionalcommits.org/en/
 
 📌 Import and run the module.
 ```javascript
-const versionator = require('versionator')
+const versionator = require('versionator-js')
 
-versionator()
+versionator.build()
 ```
 
 ## Contributing
