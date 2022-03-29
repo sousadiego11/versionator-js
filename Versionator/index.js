@@ -63,7 +63,7 @@ class Versionator {
         const text = data?.toString('utf8').split('\n').join('')
         const foundDate = existsChangelog ? new Date(/@(.+?)@/m.exec(text)[1]) : ''
 
-        if (foundDate && foundDate !== '') foundDate.setSeconds(foundDate.getSeconds() - 1)
+        if (foundDate && foundDate !== '') foundDate.setSeconds(foundDate.getSeconds() + 1)
 
         const log = foundDate && foundDate !== '' ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` 
         const output = child.execSync(log).toString().split('--DELIMITER--\n')
