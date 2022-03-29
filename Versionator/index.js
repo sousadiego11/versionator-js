@@ -11,82 +11,69 @@ const version = require(`${root}/package.json`).version
 const mdDir = `${root}/CHANGELOG.md`
 const unlinkPromised = promisify(fs.unlink)
 const renamePromised = promisify(fs.rename)
+const readFilePromised = promisify(fs.readFile)
 const pipelinePromised = promisify(pipeline)
 const existsChangelog = fs.existsSync(mdDir)
 const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
 const execRegex = require('../utils/execRegex')
-const streamToString = require('../utils/streamToString')
 
 class Versionator {
     commits = []
-    oldContent = ''
     commitsOutput = []
     finalContent = ''
     mostRecentDate = ''
 
     async init() {
-        await this.setOldContent()
         this.setMostRecentDate()
-        this.setCommitsOutput()
+        await this.setCommitsOutput()
         this.buildCommits()
     }
 
     async build() {
         
         await this.init()
-
-        if (!this.hasCommitsOutput() && this.isAllInvalidCommits()) {
+        
+        if (!this.hasCommitsOutput() || this.isAllInvalidCommits()) {
             console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
             return
+        } else {
+            this.buildChangelogContent()
         }
-
-        this.buildChangelogContent()
-        console.log(this.finalContent)
+        
         await this.runPipelines()
-
+        
         if (existsChangelog) {
             await unlinkPromised(mdDir)
             await renamePromised(`${root}/CHANGELOG2.md`, mdDir)
         }
-
-        console.table(this.commits)
+        
         console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
     }
     
     hasCommitsOutput() {
         return this.commitsOutput.filter((a) => a !== '').length > 0
     }
-
+    
     isAllInvalidCommits() {
         return this.commits.every((c) => !c.type)
     }
 
-    setCommitsOutput() {
-        const text = this.oldContent.split('\n').join('')
-        
+    async setCommitsOutput() {
+        const data = existsChangelog && await readFilePromised(mdDir)
+        const text = data?.toString('utf8').split('\n').join('')
         const foundDate = existsChangelog ? new Date(/@(.+?)@/m.exec(text)[1]) : ''
-        const validDate = foundDate && foundDate !== ''
 
-        if (validDate) foundDate.setSeconds(foundDate.getSeconds() + 1)
+        if (foundDate && foundDate !== '') foundDate.setSeconds(foundDate.getSeconds() - 1)
 
-        const log = validDate ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` 
+        const log = foundDate && foundDate !== '' ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` 
         const output = child.execSync(log).toString().split('--DELIMITER--\n')
+
         this.commitsOutput = output
     }
 
     setMostRecentDate() {
         const date = child.execSync('git log -1 --format=%aI').toString()
         this.mostRecentDate = date
-    }
-
-    async setOldContent() {
-        const readableOldChangelog = existsChangelog ? fs.createReadStream(mdDir, 'utf8') : new Readable({
-            read() {
-                this.push(null)
-            }
-        })
-        const result = await streamToString(readableOldChangelog)
-        this.oldContent = result
     }
     
     buildCommits() {
@@ -124,7 +111,12 @@ class Versionator {
     async runPipelines() {
         const date = this.mostRecentDate
         const finalContent = this.finalContent
-        const oldContent = this.oldContent
+
+        const readableOldChangelog = existsChangelog ? fs.createReadStream(mdDir, 'utf8') : new Readable({
+            read() {
+                this.push(null)
+            }
+        })
 
         const readableNewVersion = new Readable({
             read() {
@@ -140,13 +132,6 @@ class Versionator {
             }
         })
         
-        const readableOldContent = new Readable({
-            read() {
-                this.push(oldContent)
-                this.push(null)
-            }
-        })
-        
         await pipelinePromised(readableNewVersion, fs.createWriteStream(newDir, {
             flags: 'a+',
             encoding: 'utf8'
@@ -157,7 +142,7 @@ class Versionator {
             encoding: 'utf8'
         }))
         
-        await pipelinePromised(readableOldContent, fs.createWriteStream(newDir, {
+        await pipelinePromised(readableOldChangelog, fs.createWriteStream(newDir, {
             flags: 'a+',
             encoding: 'utf8'
         }))
