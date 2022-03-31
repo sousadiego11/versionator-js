@@ -43,7 +43,8 @@ class Versionator {
         
         const data = existsChangelog && await readFilePromised(mdDir)
         const text = data?.toString('utf8').split('\n').join('')
-        const foundDate = existsChangelog && data.toString('utf8') ? new Date(/@(.+?)@/m.exec(text)[1]) : false
+        const date = /@(.+?)@/m.exec(text)
+        const foundDate = existsChangelog && date ? new Date(date[1]) : false
         
         if (foundDate) foundDate.setSeconds(foundDate.getSeconds() + 1)
         
