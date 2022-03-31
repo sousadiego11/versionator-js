@@ -45,11 +45,11 @@ class Versionator {
         
         const data = existsChangelog && await readFilePromised(mdDir)
         const text = data?.toString('utf8').split('\n').join('')
-        const foundDate = existsChangelog ? new Date(/@(.+?)@/m.exec(text)[1]) : ''
+        const foundDate = existsChangelog && data.toString('utf8') ? new Date(/@(.+?)@/m.exec(text)[1]) : false
         
-        if (foundDate && foundDate !== '') foundDate.setSeconds(foundDate.getSeconds() + 1)
+        if (foundDate) foundDate.setSeconds(foundDate.getSeconds() + 1)
         
-        log = foundDate && foundDate !== '' ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--`
+        log = foundDate ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--`
         return log
     }
 
@@ -104,19 +104,6 @@ class Versionator {
             flags: 'a+',
             encoding: 'utf8'
         }))
-    }
-
-    async setCommitsOutput() {
-        const data = existsChangelog && await readFilePromised(mdDir)
-        const text = data?.toString('utf8').split('\n').join('')
-        const foundDate = existsChangelog ? new Date(/@(.+?)@/m.exec(text)[1]) : ''
-
-        if (foundDate && foundDate !== '') foundDate.setSeconds(foundDate.getSeconds() + 1)
-
-        const log = foundDate && foundDate !== '' ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : `git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` 
-        const output = child.execSync(log).toString().split('--DELIMITER--\n')
-
-        this.commitsOutput = output
     }
 }
 
