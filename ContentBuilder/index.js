@@ -5,13 +5,13 @@ const execRegex = require('../utils/execRegex');
 const targets = require('../utils/targets')
 
 const ContentBuilder =  {
-    feats: ['### ✨**Features**:\n'],
-    fixes: ['### 🐛**Fixes**:\n'],
-    refactors: ['### 🔥**Refactors**:\n'],
-    docums: ['### 📝**Docs**:\n'],
-    chores: ['### 🔧**Chores**:\n'],
-    perfs: ['### ⚡️**Perfs**:\n'],
-    tests: ['### 🧪**Tests**:\n'],
+    feats: ['\n### ✨**Features**:\n'],
+    fixes: ['\n### 🐛**Fixes**:\n'],
+    refactors: ['\n### 🔥**Refactors**:\n'],
+    docums: ['\n### 📝**Docs**:\n'],
+    chores: ['\n### 🔧**Chores**:\n'],
+    perfs: ['\n### ⚡️**Perfs**:\n'],
+    tests: ['\n### 🧪**Tests**:\n'],
     feat(e) {
         this.feats.push(e)
     },

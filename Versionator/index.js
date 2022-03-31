@@ -18,15 +18,13 @@ const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
 const promisedExec = require('../utils/promisedExec');
 
 class Versionator {
+    hasContents = false
 
     async build() {
-        await this.setHeader()
         await this.setNewContent()
         await this.setPreviousContent()
         await this.handleFinish()
     }
-
-    
     
     buildFinalContent() {
         let finalContent = ''
@@ -58,6 +56,11 @@ class Versionator {
             await unlinkPromised(mdDir)
             await renamePromised(`${root}/CHANGELOG2.md`, mdDir)
         }
+        if (this.hasContents) {
+            console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
+        } else {
+            console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
+        }
     }
     
     async setHeader() {
@@ -79,6 +82,11 @@ class Versionator {
         const log = await this.getLog()
         await promisedExec(log, this.transformLogs)
         const finalContent = this.buildFinalContent()
+
+        if (finalContent) {
+            await this.setHeader()
+            this.hasContents = true
+        }
 
         const readableNewContent = new Readable({
             read() {
