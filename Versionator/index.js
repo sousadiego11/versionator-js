@@ -1,7 +1,6 @@
 const ContentBuilder = require('../ContentBuilder')
 const targets = require('../utils/targets')
-const { dirname } = require('path');
-const root = dirname(require.main.filename);
+const root = require('../utils/getRootPath')
 const fs = require('fs')
 const chalk = require('chalk')
 const child = require('child_process');
