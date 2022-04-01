@@ -42,10 +42,18 @@ const versionator = require('versionator-js')
 versionator.build()
 ```
 
-or run
+or
 
 ```javascript
-npx versionator
+npx versionator-js
+```
+
+or
+
+```javascript
+npm install versionator-js -g
+
+versionator-js
 ```
 
 ## Contributing
