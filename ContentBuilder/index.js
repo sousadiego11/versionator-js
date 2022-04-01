@@ -1,5 +1,4 @@
-const { dirname } = require('path');
-const root = dirname(require.main.filename);
+const root = require('../utils/getRootPath')
 const config = require(`${root}/changelog.config.json`).commits_dir
 const execRegex = require('../utils/execRegex');
 const targets = require('../utils/targets')
