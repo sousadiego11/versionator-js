@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "versionator": "node src/app.js"
+    "versionator": "node src/cli.js"
   },
   "repository": {
     "type": "git",
