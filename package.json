@@ -2,15 +2,15 @@
   "name": "versionator-js",
   "version": "1.4.2",
   "description": "Create dynamic changelogs for your project!",
-  "main": "app.js",
-  "module": "app.js",
+  "main": "src/app.js",
+  "module": "src/app.js",
   "type": "module",
   "bin": {
-    "versionator-js": "./cli.js"
+    "versionator-js": "./src/cli.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "versionator": "node app.js"
+    "versionator": "node src/app.js"
   },
   "repository": {
     "type": "git",
