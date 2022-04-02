@@ -7,4 +7,4 @@ const streamToString = (stream) => {
   })
 }
 
-module.exports = streamToString
+export default streamToString

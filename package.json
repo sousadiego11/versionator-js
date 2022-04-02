@@ -4,6 +4,7 @@
   "description": "Create dynamic changelogs for your project!",
   "main": "app.js",
   "module": "app.js",
+  "type": "module",
   "bin": {
     "versionator-js": "./cli.js"
   },

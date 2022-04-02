@@ -8,4 +8,4 @@ const targets = {
     tests: 'tests',
 }
 
-module.exports = targets
+export default targets

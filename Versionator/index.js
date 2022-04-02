@@ -1,20 +1,27 @@
-const ContentBuilder = require('../ContentBuilder')
-const targets = require('../utils/targets')
-const root = require('../utils/getRootPath')
-const fs = require('fs')
-const chalk = require('chalk')
-const child = require('child_process');
-const { Readable, pipeline } = require('stream');
-const { promisify } = require('util');
-const version = require(`${root}/package.json`).version
-const mdDir = `${root}/CHANGELOG.md`
-const unlinkPromised = promisify(fs.unlink)
-const renamePromised = promisify(fs.rename)
-const readFilePromised = promisify(fs.readFile)
+import chalk from 'chalk'
+import { execSync } from 'child_process'
+import { createReadStream, createWriteStream, existsSync, readFile, rename, unlink, readFileSync } from 'fs'
+import { pipeline, Readable } from 'stream'
+import { promisify } from 'util'
+
+import ContentBuilder from '../ContentBuilder/index.js'
+import root from '../utils/getRootPath.js'
+import promisedExec from '../utils/promisedExec.js'
+import targets from '../utils/targets.js'
+
+const { black } = chalk
+
+const unlinkPromised = promisify(unlink)
+const renamePromised = promisify(rename)
+const readFilePromised = promisify(readFile)
 const pipelinePromised = promisify(pipeline)
-const existsChangelog = fs.existsSync(mdDir)
+
+const mdDir = `${root}/CHANGELOG.md`
+const existsChangelog = existsSync(mdDir)
+
 const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
-const promisedExec = require('../utils/promisedExec');
+const packageJson = readFileSync(`${root}/package.json`)
+const version = packageJson.version
 
 class Versionator {
     hasContents = false
@@ -57,14 +64,14 @@ class Versionator {
             await renamePromised(`${root}/CHANGELOG2.md`, mdDir)
         }
         if (this.hasContents) {
-            console.log(chalk.black.bgGreen.bold('Changelog update succesfully!'))
+            console.log(black.bgGreen.bold('Changelog update succesfully!'))
         } else {
-            console.log(chalk.black.bgYellow.bold('Changelog is already updated with most recent commits!'))
+            console.log(black.bgYellow.bold('Changelog is already updated with most recent commits!'))
         }
     }
     
     async setHeader() {
-        const date = child.execSync('git log -1 --format=%aI').toString()
+        const date = execSync('git log -1 --format=%aI').toString()
         const readableNewVersion = new Readable({
             read() {
                 this.push(`<!-- @${date}@ -->\n## Versão ${version} \n`)
@@ -72,7 +79,7 @@ class Versionator {
             }
         })
 
-        await pipelinePromised(readableNewVersion, fs.createWriteStream(newDir, {
+        await pipelinePromised(readableNewVersion, createWriteStream(newDir, {
             flags: 'a+',
             encoding: 'utf8'
         }))
@@ -95,24 +102,24 @@ class Versionator {
             }
         })
 
-        await pipelinePromised(readableNewContent, fs.createWriteStream(newDir, {
+        await pipelinePromised(readableNewContent, createWriteStream(newDir, {
             flags: 'a+',
             encoding: 'utf8'
         }))
     }
     
     async setPreviousContent() {
-        const readableOldChangelog = existsChangelog ? fs.createReadStream(mdDir, 'utf8') : new Readable({
+        const readableOldChangelog = existsChangelog ? createReadStream(mdDir, 'utf8') : new Readable({
             read() {
                 this.push(null)
             }
         })
 
-        await pipelinePromised(readableOldChangelog, fs.createWriteStream(newDir, {
+        await pipelinePromised(readableOldChangelog, createWriteStream(newDir, {
             flags: 'a+',
             encoding: 'utf8'
         }))
     }
 }
 
-module.exports = Versionator
+export default Versionator

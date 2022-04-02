@@ -1,1 +1,1 @@
-module.exports = process.env.PWD
+export default process.env.PWD

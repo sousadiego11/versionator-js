@@ -1,7 +1,10 @@
-const root = require('../utils/getRootPath')
-const config = require(`${root}/changelog.config.json`).commits_dir
-const execRegex = require('../utils/execRegex');
-const targets = require('../utils/targets')
+import root from '../utils/getRootPath.js';
+import execRegex from '../utils/execRegex.js';
+import targets from '../utils/targets.js';
+import fs from 'fs'
+
+const config = fs.readFileSync(`${root}/changelog.config.json`)
+const commitsDir = config.commits_dir
 
 const ContentBuilder =  {
     feats: ['\n### ✨**Features**:\n'],
@@ -33,7 +36,7 @@ const ContentBuilder =  {
         this.tests.push(e)
     },
     build({ body, tag, issue, date, author }) {
-        return  issue ? `${date} **${author}**: #${issue} - ${body} [${tag}](${config}/${tag})\n` : `${date} **${author}**: ${body} [${tag}](${config}/${tag})\n`
+        return  issue ? `${date} **${author}**: #${issue} - ${body} [${tag}](${commitsDir}/${tag})\n` : `${date} **${author}**: ${body} [${tag}](${commitsDir}/${tag})\n`
     },
     buildCommits(commits) {
         return commits.map((c) => {
@@ -52,4 +55,4 @@ const ContentBuilder =  {
     },
 }
 
-module.exports = ContentBuilder
+export default ContentBuilder

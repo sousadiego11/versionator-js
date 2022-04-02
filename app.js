@@ -1,3 +1,3 @@
-const Versionator = require('./Versionator')
+import Versionator from "./Versionator/index.js";
 
-module.exports = new Versionator()
+export default new Versionator()

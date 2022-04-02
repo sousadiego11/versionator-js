@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-const Versionator = require('./Versionator')
+import Versionator from './Versionator/index.js'
 
 new Versionator().build()
