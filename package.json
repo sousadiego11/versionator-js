@@ -9,7 +9,7 @@
     "versionator-js": "./src/cli.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --passWithNoTests --runInBand --no-cache --watch --forceExit",
     "versionator": "node src/cli.js"
   },
   "repository": {
@@ -27,5 +27,8 @@
   "homepage": "https://github.com/sousadiego11/versionator#readme",
   "dependencies": {
     "chalk": "^2.4.1"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
   }
 }
