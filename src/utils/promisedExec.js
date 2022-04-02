@@ -1,8 +1,8 @@
 
-const child = require('child_process');
+import { exec } from 'child_process';
 
 const promisedExec = (cmd, transform, cb) => {
-    const p = child.exec(cmd)
+    const p = exec(cmd)
 
     return new Promise((resolve, reject) => {
         p.stdout.on('data', transform)
@@ -11,4 +11,4 @@ const promisedExec = (cmd, transform, cb) => {
     })
 }
 
-module.exports = promisedExec
+export default promisedExec
