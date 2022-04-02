@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { execSync } from 'child_process'
-import { createReadStream, createWriteStream, existsSync, readFile, rename, unlink, readFileSync } from 'fs'
+import { createReadStream, createWriteStream, readFile, rename, unlink } from 'fs'
 import { pipeline, Readable } from 'stream'
 import { promisify } from 'util'
 
@@ -8,7 +8,9 @@ import ContentBuilder from '../ContentBuilder/index.js'
 import root from '../utils/getRootPath.js'
 import promisedExec from '../utils/promisedExec.js'
 import targets from '../utils/targets.js'
+import { configs } from '../utils/configs.js';
 
+const { version, existsChangelog, newDir, mdDir } = configs
 const { black } = chalk
 
 const unlinkPromised = promisify(unlink)
@@ -16,12 +18,6 @@ const renamePromised = promisify(rename)
 const readFilePromised = promisify(readFile)
 const pipelinePromised = promisify(pipeline)
 
-const mdDir = `${root}/CHANGELOG.md`
-const existsChangelog = existsSync(mdDir)
-
-const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
-const packageJson = readFileSync(`${root}/package.json`)
-const version = packageJson.version
 
 class Versionator {
     hasContents = false

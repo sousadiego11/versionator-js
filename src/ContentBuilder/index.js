@@ -1,10 +1,8 @@
-import root from '../utils/getRootPath.js';
 import execRegex from '../utils/execRegex.js';
 import targets from '../utils/targets.js';
-import fs from 'fs'
+import { configs } from '../utils/configs.js';
 
-const config = fs.readFileSync(`${root}/changelog.config.json`)
-const commitsDir = config.commits_dir
+const { commitsDir } = configs
 
 const ContentBuilder =  {
     feats: ['\n### ✨**Features**:\n'],
