@@ -43,7 +43,7 @@ class Versionator {
 
     transformLogs(output) {
         const commits = ContentBuilder.buildCommits(output.split('--DELIMITER--\n'))
-        commits.forEach((c) => c.type && ContentBuilder[c.type](ContentBuilder.build({...c, commitsDir: this.commitsDir})))
+        commits.forEach((c) => c.type && ContentBuilder[c.type](ContentBuilder.build(c)))
     }
 
     async existsConfig() {
