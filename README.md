@@ -1,4 +1,8 @@
 <div align="center">
+    <img src="https://raw.githubusercontent.com/gist/prynssmaia/2fc96bfea4c985468354f1fe889df90a/raw/8ff3bfd032215dd8688e709c543ec5dc7d3e5b3a/versionatorteste.svg"/>
+</div>
+
+<div align="center">
     <a target="_blank"><img src="https://img.shields.io/librariesio/release/npm/versionator-js" target="_blank"></a>
     <a target="_blank"><img src="https://img.shields.io/npm/dw/versionator-js" target="_blank"></a>
     <a target="_blank"><img src="https://img.shields.io/github/issues-raw/sousadiego11/versionator-js" target="_blank"></a>
