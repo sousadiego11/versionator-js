@@ -16,39 +16,43 @@
   <a target="_blank"><img src="https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white" target="_blank"></a>
 </div>
 
-## Installation
+## 🚀 Configuration
+This package uses **[conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)** as a base for constructing the changelog, make sure your commits follow this pattern.
 
-Use the package manager npm to install versionator-js.
-
-```bash
-npm install versionator-js
-```
-
-## Usage
-This package uses [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) as a base for constructing the changelog, make sure your commits follow this pattern.
-
-📝 Create a changelog.config.json in your root directory and provide the link for your repository's commits destination as the example bellow:
+Create a **changelog.config.json** in your root directory and provide the link for your repository's commits destination as the example bellow:
 ```javascript
 {
     "commits_dir": "https://github.com/user/repository/commit"
 }
 ```
+Or configure your workspace with the command line:
+```bash
+npx versionator-js init
 
+or
 
-📌 Import and run the module.
+npm install versionator-js -g
+versionator-js init
+```
+
+## 🚨 Running versionator-js in your project.
+```bash
+npm install versionator-js
+```
+AND
 ```javascript
 const versionator = require('versionator-js')
 
 versionator.build()
 ```
 
-or
+OR
 
 ```javascript
 npx versionator-js
 ```
 
-or
+OR
 
 ```javascript
 npm install versionator-js -g
@@ -56,8 +60,8 @@ npm install versionator-js -g
 versionator-js
 ```
 
-## Contributing
+## ♻️ Contributing
 Keep in mind that it is still an ongoing project at its beginning, pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
+## 🚧 License
 [ISC](https://opensource.org/licenses/ISC)
