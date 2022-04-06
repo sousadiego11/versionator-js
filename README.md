@@ -1,4 +1,8 @@
 <div align="center">
+    <img width="350px" src="https://raw.githubusercontent.com/gist/prynssmaia/78cc9954ce6810647a2ab4035e1e1ac2/raw/206d5a3cf4addb6e6aa5b0fd620ccf836cb0b98b/versionator.svg"/>
+</div>
+
+<div align="center">
     <a target="_blank"><img src="https://img.shields.io/librariesio/release/npm/versionator-js" target="_blank"></a>
     <a target="_blank"><img src="https://img.shields.io/npm/dw/versionator-js" target="_blank"></a>
     <a target="_blank"><img src="https://img.shields.io/github/issues-raw/sousadiego11/versionator-js" target="_blank"></a>
@@ -11,10 +15,6 @@
   <a target="_blank"><img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white" target="_blank"></a>
   <a target="_blank"><img src="https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white" target="_blank"></a>
 </div>
-
-# Versionator-js
-
-Create dynamic and automatic changelogs for your project!.
 
 ## Installation
 
