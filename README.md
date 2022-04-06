@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://raw.githubusercontent.com/gist/prynssmaia/2fc96bfea4c985468354f1fe889df90a/raw/8ff3bfd032215dd8688e709c543ec5dc7d3e5b3a/versionatorteste.svg"/>
+    <img width="350px" src="https://raw.githubusercontent.com/gist/prynssmaia/78cc9954ce6810647a2ab4035e1e1ac2/raw/206d5a3cf4addb6e6aa5b0fd620ccf836cb0b98b/versionator.svg"/>
 </div>
 
 <div align="center">
@@ -15,10 +15,6 @@
   <a target="_blank"><img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white" target="_blank"></a>
   <a target="_blank"><img src="https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white" target="_blank"></a>
 </div>
-
-# Versionator-js
-
-Create dynamic and automatic changelogs for your project!.
 
 ## Installation
 
