@@ -12,7 +12,7 @@ const promisedReadline = (cfgDir) => {
             output: process.stdout
         });
 
-        rl.question(black.bgYellow.bold("Directory for the repository commits:"), (commits_dir) => {
+        rl.question(black.bgYellow.bold("URL for your repository commits:"), (commits_dir) => {
             writeFileSync(cfgDir, JSON.stringify({ commits_dir }))
             rl.close();
         });
