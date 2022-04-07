@@ -90,7 +90,7 @@ class Versionator {
         const date = execSync('git log -1 --format=%aI').toString()
         const readableNewVersion = new Readable({
             read() {
-                this.push(`<!-- @${date}@ -->\n## Versão ${version} \n`)
+                this.push(`<!-- @${date}@ -->\n# ${version} \n`)
                 this.push(null)
             }
         })
