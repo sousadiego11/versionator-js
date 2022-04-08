@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 
-const getUrlGitRepo = async () => {
+const getUrlGitRepo = () => {
     const stdout = execSync('git ls-remote --get-url');
     if (stdout) {
         // Transform git url to https url (is needed to create the url accessible by the browser)

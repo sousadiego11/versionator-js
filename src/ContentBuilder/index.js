@@ -1,6 +1,6 @@
 import execRegex from '../utils/execRegex.js';
 import targets from '../utils/targets.js';
-import { configs } from '../utils/configs.js';
+import configs from '../utils/configs.js';
 
 const { commitsDir } = configs
 

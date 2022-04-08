@@ -1,17 +1,17 @@
 import chalk from 'chalk'
 import { execSync } from 'child_process'
-import { createReadStream, createWriteStream, readFile, rename, unlink, writeFileSync } from 'fs'
+import { createReadStream, createWriteStream, readFile, rename, unlink } from 'fs'
 import { pipeline, Readable } from 'stream'
 import { promisify } from 'util'
 
 import ContentBuilder from '../ContentBuilder/index.js'
 import root from '../utils/getRootPath.js'
 import promisedExec from '../utils/promisedExec.js'
-import promisedReadline from '../utils/promisedReadline.js'
 import targets from '../utils/targets.js'
-import { cfgDir, configs } from '../utils/configs.js';
+import configs from '../utils/configs.js';
+import { terminalHandler } from '../utils/terminalHandler.js'
 
-const { version, existsChangelog, newDir, mdDir, commitsDir } = configs
+const { version, existsChangelog, newDir, mdDir } = configs
 const { black } = chalk
 
 const unlinkPromised = promisify(unlink)
@@ -22,12 +22,11 @@ const pipelinePromised = promisify(pipeline)
 
 class Versionator {
     hasContents = false
-    configured = false
 
     async build() {
-        this.existsConfig() 
+        const configuredWorkspace = await terminalHandler() 
         
-        if (this.configured) {
+        if (configuredWorkspace) {
             await this.setNewContent()
             await this.setPreviousContent()
             await this.handleFinish()
@@ -44,20 +43,6 @@ class Versionator {
     transformLogs(output) {
         const commits = ContentBuilder.buildCommits(output.split('--DELIMITER--\n'))
         commits.forEach((c) => c.type && ContentBuilder[c.type](ContentBuilder.build(c)))
-    }
-
-    async existsConfig() {
-        const configuring = process.argv[2] === 'init'
-
-        if (!commitsDir && !configuring) {
-            console.log(black.bgYellow.bold("changelog.config.json not found, please run 'versionator-js init' to configure your workspace!"))
-            return
-        }
-        if (configuring && !commitsDir) {   
-            await promisedReadline(cfgDir)
-            return
-        }
-        this.configured = true
     }
 
     async getLog() {
@@ -90,7 +75,7 @@ class Versionator {
         const date = execSync('git log -1 --format=%aI').toString()
         const readableNewVersion = new Readable({
             read() {
-                this.push(`<!-- @${date}@ -->\n# ${version} \n`)
+                this.push(`<!-- @${date}@ LATEST-VERSION(DONT REMOVE THIS LINE)-->\n# ${version} \n`)
                 this.push(null)
             }
         })

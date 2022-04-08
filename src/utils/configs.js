@@ -1,8 +1,8 @@
 import root from '../utils/getRootPath.js';
 import { readFileSync, existsSync } from 'fs'
-export const pckgDir = `${root}/package.json`
-export const cfgDir = `${root}/changelog.config.json`
 
+const pckgDir = `${root}/package.json`
+const cfgDir = `${root}/changelog.config.json`
 const config = existsSync(cfgDir) && readFileSync(cfgDir).toString()
 const packageJson = existsSync(pckgDir) && readFileSync(pckgDir).toString()
 const commitsDir = config && JSON.parse(config).commits_dir
@@ -11,10 +11,14 @@ const mdDir = `${root}/CHANGELOG.md`
 const existsChangelog = existsSync(mdDir)
 const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
 
-export const configs = {
+const configs = {
     version,
     commitsDir,
     newDir,
     mdDir,
-    existsChangelog
+    existsChangelog,
+    pckgDir,
+    cfgDir
 }
+
+export default configs
