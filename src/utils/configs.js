@@ -10,6 +10,7 @@ const version = packageJson && JSON.parse(packageJson).version
 const mdDir = `${root}/CHANGELOG.md`
 const existsChangelog = existsSync(mdDir)
 const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
+const emojiRegex = /(:art:|:zap:|:fire:|:bug:|:sparkles:|:memo:|:rocket:|:tada:|:lipstick:|:ambulance:)/
 
 const configs = {
     version,
@@ -18,7 +19,8 @@ const configs = {
     mdDir,
     existsChangelog,
     pckgDir,
-    cfgDir
+    cfgDir,
+    emojiRegex
 }
 
 export default configs

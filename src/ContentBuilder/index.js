@@ -1,8 +1,9 @@
 import execRegex from '../utils/execRegex.js';
 import targets from '../utils/targets.js';
 import configs from '../utils/configs.js';
+import emojis from '../utils/emojis.js';
 
-const { commitsDir } = configs
+const { commitsDir, emojiRegex } = configs
 
 const ContentBuilder =  {
     feats: ['\n### ✨**Features**:\n'],
@@ -34,7 +35,12 @@ const ContentBuilder =  {
         this.tests.push(e)
     },
     build({ body, tag, issue, date, author }) {
-        return  issue ? `${date} **${author}**: #${issue} - ${body} [${tag}](${commitsDir}/${tag})\n` : `${date} **${author}**: ${body} [${tag}](${commitsDir}/${tag})\n`
+
+        const foundMatchEmoji = emojiRegex.exec(body)
+        const emoji = foundMatchEmoji ? emojis[foundMatchEmoji[1]] : ''
+        const newBody = body.replace(emojiRegex, '')
+
+        return  issue ? `${date} **${author}**: #${issue} - ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n` : `${date} **${author}**: ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n`
     },
     buildCommits(commits) {
         return commits.map((c) => {
