@@ -3,12 +3,11 @@
 </div>
 
 <div align="center">
-    <a target="_blank"><img src="https://img.shields.io/librariesio/release/npm/versionator-js" target="_blank"></a>
-    <a target="_blank"><img src="https://img.shields.io/npm/dw/versionator-js" target="_blank"></a>
-    <a target="_blank"><img src="https://img.shields.io/github/issues-raw/sousadiego11/versionator-js" target="_blank"></a>
-    <a target="_blank"><img src="https://img.shields.io/github/languages/code-size/sousadiego11/versionator-js" target="_blank"></a>
-    <a target="_blank"><img src="https://img.shields.io/npm/l/versionator-js" target="_blank"></a>
-    
+    <a target="_blank"><img src="https://img.shields.io/librariesio/release/npm/versionator-js?labelColor=0D1117&color=cd52d0" target="_blank"></a>
+    <a target="_blank"><img src="https://img.shields.io/npm/dw/versionator-js?labelColor=0D1117&color=ac3bc8" target="_blank"></a>
+    <a target="_blank"><img src="https://img.shields.io/github/issues-raw/sousadiego11/versionator-js?labelColor=0D1117&color=8825c0" target="_blank"></a>
+    <a target="_blank"><img src="https://img.shields.io/github/languages/code-size/sousadiego11/versionator-js?labelColor=0D1117&color=5c13b9" target="_blank"></a>
+    <a target="_blank"><img src="https://img.shields.io/npm/l/versionator-js?labelColor=0D1117&color=3C087D" target="_blank"></a>  
 </div>
  <div align="center">
   <a target="_blank"><img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" target="_blank"></a>
