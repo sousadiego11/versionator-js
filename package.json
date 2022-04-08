@@ -1,6 +1,6 @@
 {
   "name": "versionator-js",
-  "version": "1.4.10",
+  "version": "1.4.9",
   "description": "Create dynamic changelogs for your project!",
   "main": "src/app.js",
   "module": "src/app.js",
