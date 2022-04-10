@@ -1,4 +1,4 @@
-import root from '../utils/getRootPath.js';
+import root from '../utils/getRootPath.js'
 import { readFileSync, existsSync } from 'fs'
 
 const pckgDir = `${root}/package.json`
@@ -13,14 +13,14 @@ const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
 const emojiRegex = /(:art:|:zap:|:fire:|:bug:|:sparkles:|:memo:|:rocket:|:tada:|:lipstick:|:ambulance:)/
 
 const configs = {
-    version,
-    commitsDir,
-    newDir,
-    mdDir,
-    existsChangelog,
-    pckgDir,
-    cfgDir,
-    emojiRegex
+  version,
+  commitsDir,
+  newDir,
+  mdDir,
+  existsChangelog,
+  pckgDir,
+  cfgDir,
+  emojiRegex
 }
 
 export default configs

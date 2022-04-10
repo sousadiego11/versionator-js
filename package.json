@@ -4,13 +4,12 @@
   "description": "Create dynamic changelogs for your project!",
   "main": "src/app.js",
   "module": "src/app.js",
-  "type": "module",
   "bin": {
-    "versionator-js": "./src/cli.js"
+    "versionator-js": "./src/cli.ts"
   },
   "scripts": {
     "test": "jest --passWithNoTests --runInBand --no-cache --watch --forceExit",
-    "versionator": "node src/cli.js"
+    "dev": "ts-node-dev src/cli.ts --respawn --transpileOnly"
   },
   "repository": {
     "type": "git",
@@ -26,9 +25,19 @@
   },
   "homepage": "https://github.com/sousadiego11/versionator#readme",
   "dependencies": {
-    "chalk": "^2.4.1"
+    "@types/chalk": "^2.2.0",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
+    "chalk": "^2.4.1",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1"
   },
   "devDependencies": {
-    "jest": "^27.5.1"
+    "eslint": "^8.13.0",
+    "jest": "^27.5.1",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.3"
   }
 }
