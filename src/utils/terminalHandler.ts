@@ -2,7 +2,9 @@ import chalk from 'chalk';
 import promisedReadline from './promisedReadline.js';
 import configs from './configs.js';
 
+//@ts-ignore
 const { black } = chalk
+
 const { commitsDir, cfgDir } = configs
 
 export const terminalHandler = async () => {

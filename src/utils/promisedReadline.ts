@@ -1,12 +1,13 @@
 
 import chalk from 'chalk';
-import { writeFileSync } from 'fs';
+import { writeFileSync, PathOrFileDescriptor } from 'fs';
 import readline from 'readline'
 import getUrlGitRepo from './getUrlGitRepo.js';
 
+//@ts-ignore
 const { black } = chalk
 
-const promisedReadline = async (cfgDir) => {
+const promisedReadline = async (cfgDir: PathOrFileDescriptor) => {
     const urlToValidateGit = getUrlGitRepo()
     return new Promise((resolve) => {
         const rl = readline.createInterface({

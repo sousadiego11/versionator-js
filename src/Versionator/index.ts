@@ -12,6 +12,8 @@ import configs from '../utils/configs.js';
 import { terminalHandler } from '../utils/terminalHandler.js'
 
 const { version, existsChangelog, newDir, mdDir } = configs
+
+//@ts-ignore
 const { black } = chalk
 
 const unlinkPromised = promisify(unlink)
@@ -35,13 +37,15 @@ class Versionator {
     
     buildFinalContent() {
         let finalContent = ''
+        //@ts-ignore
         Object.values(targets).forEach((t) =>  ContentBuilder[t].length > 1 ? finalContent += ContentBuilder[t].join('\n') : null)
         
         return finalContent
     }
 
-    transformLogs(output) {
+    transformLogs(output: string) {
         const commits = ContentBuilder.buildCommits(output.split('--DELIMITER--\n'))
+        //@ts-ignore
         commits.forEach((c) => c.type && ContentBuilder[c.type](ContentBuilder.build(c)))
     }
 
