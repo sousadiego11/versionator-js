@@ -3,7 +3,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "target": "ESNext",
-    "module": "NodeNext",
+    "module": "CommonJS",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
