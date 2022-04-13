@@ -4,7 +4,6 @@ import { writeFileSync, PathOrFileDescriptor } from 'fs'
 import readline from 'readline'
 import getUrlGitRepo from './getUrlGitRepo.js'
 
-// @ts-expect-error
 const { black } = chalk
 
 const promisedReadline = async (cfgDir: PathOrFileDescriptor) => {

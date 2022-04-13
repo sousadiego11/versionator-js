@@ -2,7 +2,6 @@ import chalk from 'chalk'
 import promisedReadline from './promisedReadline.js'
 import configs from './configs.js'
 
-// @ts-expect-error
 const { black } = chalk
 
 const { commitsDir, cfgDir } = configs

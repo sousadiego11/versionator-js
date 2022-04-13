@@ -13,7 +13,6 @@ import { terminalHandler } from '../utils/terminalHandler.js'
 
 const { version, existsChangelog, newDir, mdDir } = configs
 
-// @ts-expect-error
 const { black } = chalk
 
 const unlinkPromised = promisify(unlink)

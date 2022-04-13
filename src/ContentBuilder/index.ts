@@ -41,7 +41,7 @@ const ContentBuilder = {
     const emoji = (foundMatchEmoji != null) ? emojis[foundMatchEmoji[1] as keyof typeof emojis] : ''
     const newBody = body.replace(emojiRegex, '')
 
-    return (issue !== '') ? `${date} **${author}**: #${issue} - ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n` : `${date} **${author}**: ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n`
+    return (issue !== '' && issue) ? `${date} **${author}**: #${issue} - ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n` : `${date} **${author}**: ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n`
   },
   buildCommits (commits: string[]) {
     return commits.map((c) => {
