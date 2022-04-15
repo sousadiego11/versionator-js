@@ -3,6 +3,7 @@ import promisedReadline from './promisedReadline.js'
 import configs from './configs.js'
 
 const { black } = chalk
+
 const { commitsDir, cfgDir } = configs
 
 export const terminalHandler = async () => {

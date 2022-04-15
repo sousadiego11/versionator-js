@@ -1,4 +1,4 @@
-import root from '../utils/getRootPath.js'
+import root from './getRootPath.js'
 import { readFileSync, existsSync } from 'fs'
 
 const pckgDir = `${root}/package.json`

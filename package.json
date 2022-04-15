@@ -1,15 +1,19 @@
 {
   "name": "versionator-js",
-  "version": "1.4.13",
+  "version": "1.5.0",
   "description": "Create dynamic changelogs for your project!",
-  "main": "src/app.js",
-  "module": "src/app.js",
+  "main": "dist/app.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/app.js",
   "bin": {
-    "versionator-js": "./src/cli.ts"
+    "versionator-js": "./dist/cli.js"
   },
   "scripts": {
+    "lint": "eslint . --ext .ts",
+    "prepublish": "tsc",
+    "build": "tsc",
     "test": "jest --passWithNoTests --runInBand --no-cache --watch --forceExit",
-    "dev": "ts-node-dev src/cli.ts --respawn --transpileOnly"
+    "versionator": "tsc & node ./dist/cli.js"
   },
   "repository": {
     "type": "git",
@@ -35,9 +39,14 @@
     "eslint-plugin-promise": "^4.2.1"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
     "eslint": "^8.13.0",
+    "eslint-config-standard-with-typescript": "^21.0.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.0.0",
     "jest": "^27.5.1",
-    "ts-node-dev": "^1.1.8",
     "typescript": "^4.6.3"
   }
 }

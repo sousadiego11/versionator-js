@@ -12,6 +12,7 @@ import configs from '../utils/configs.js'
 import { terminalHandler } from '../utils/terminalHandler.js'
 
 const { version, existsChangelog, newDir, mdDir } = configs
+
 const { black } = chalk
 
 const unlinkPromised = promisify(unlink)
@@ -34,19 +35,15 @@ class Versionator {
 
   buildFinalContent () {
     let finalContent = ''
-    Object.values(targets).forEach((t) => {
-      if (ContentBuilder[t].length > 1) {
-        finalContent += ContentBuilder[t].join('\n')
-      } else {
-        return null
-      }
-    })
+    // @ts-expect-error
+    Object.values(targets).forEach((t) => ContentBuilder[t].length > 1 ? finalContent += ContentBuilder[t].join('\n') : null)
 
     return finalContent
   }
 
-  transformLogs (output) {
+  transformLogs (output: string) {
     const commits = ContentBuilder.buildCommits(output.split('--DELIMITER--\n'))
+    // @ts-expect-error
     commits.forEach((c) => c.type && ContentBuilder[c.type](ContentBuilder.build(c)))
   }
 
@@ -54,12 +51,11 @@ class Versionator {
     const data = existsChangelog && await readFilePromised(mdDir)
     const text = data?.toString('utf8').split('\n').join('')
     const date = /@(.+?)@/m.exec(text)
-    const foundDate = existsChangelog && date ? new Date(date[1]) : false
+    const foundDate = existsChangelog && (date != null) ? new Date(date[1]) : false
 
     if (foundDate) foundDate.setSeconds(foundDate.getSeconds() + 1)
 
-    const log = foundDate ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : 'git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--'
-    return log
+    return foundDate ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : 'git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--'
   }
 
   async handleFinish () {
