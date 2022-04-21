@@ -3,7 +3,7 @@ import targets from '../utils/targets.js'
 import configs from '../utils/configs.js'
 import emojis from '../utils/emojis.js'
 
-const { commitsDir, emojiRegex } = configs
+const { commitsDir, emojiRegex, issuesDir } = configs
 
 interface BuildProps { body: string, tag: string, issue: string, date: string, author: string }
 
@@ -41,7 +41,7 @@ const ContentBuilder = {
     const emoji = (foundMatchEmoji != null) ? emojis[foundMatchEmoji[1] as keyof typeof emojis] : ''
     const newBody = body.replace(emojiRegex, '')
 
-    return (issue !== '' && issue) ? `${date} **${author}**: #${issue} - ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n` : `${date} **${author}**: ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n`
+    return (issue !== '' && issue) ? `${date} **${author}**: [${issue}](${issuesDir}/${issue}) - ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n` : `${date} **${author}**: ${emoji}${newBody} [${tag}](${commitsDir}/${tag})\n`
   },
   buildCommits (commits: string[]) {
     return commits.map((c) => {

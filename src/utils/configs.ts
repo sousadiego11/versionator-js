@@ -6,6 +6,7 @@ const cfgDir = `${root}/changelog.config.json`
 const config = existsSync(cfgDir) && readFileSync(cfgDir).toString()
 const packageJson = existsSync(pckgDir) && readFileSync(pckgDir).toString()
 const commitsDir = config && JSON.parse(config).commits_dir
+const issuesDir = config && JSON.parse(config).issues_dir
 const version = packageJson && JSON.parse(packageJson).version
 const mdDir = `${root}/CHANGELOG.md`
 const existsChangelog = existsSync(mdDir)
@@ -15,6 +16,7 @@ const emojiRegex = /(:art:|:zap:|:fire:|:bug:|:sparkles:|:memo:|:rocket:|:tada:|
 const configs = {
   version,
   commitsDir,
+  issuesDir,
   newDir,
   mdDir,
   existsChangelog,
