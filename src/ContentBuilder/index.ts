@@ -2,12 +2,11 @@ import execRegex from '../utils/execRegex.js'
 import targets from '../utils/targets.js'
 import configs from '../utils/configs.js'
 import emojis from '../utils/emojis.js'
+import { IContentBuilder } from './interfaces'
 
 const { commitsDir, emojiRegex, issuesDir } = configs
 
-interface BuildProps { body: string, tag: string, issue: string, date: string, author: string }
-
-const ContentBuilder = {
+const ContentBuilder: IContentBuilder = {
   feats: ['\n### ✨**Features**:\n'],
   fixes: ['\n### 🐛**Fixes**:\n'],
   refactors: ['\n### 🔥**Refactors**:\n'],
@@ -15,6 +14,7 @@ const ContentBuilder = {
   chores: ['\n### 🔧**Chores**:\n'],
   perfs: ['\n### ⚡️**Perfs**:\n'],
   tests: ['\n### 🧪**Tests**:\n'],
+
   feat (e: string) {
     this.feats.push(e)
   },
@@ -36,7 +36,8 @@ const ContentBuilder = {
   test (e: string) {
     this.tests.push(e)
   },
-  build ({ body, tag, issue, date, author }: BuildProps) {
+
+  build ({ body, tag, issue, date, author }: IContentBuilder.BuildRequest) {
     const foundMatchEmoji = emojiRegex.exec(body)
     const emoji = (foundMatchEmoji != null) ? emojis[foundMatchEmoji[1] as keyof typeof emojis] : ''
     const newBody = body.replace(emojiRegex, '')
