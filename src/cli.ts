@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-import Versionator from './Versionator/index.js'
+import { Versionator, VersionatorBuilder } from "./Versionator";
 
-new Versionator().build()
+new Versionator(new VersionatorBuilder()).build()

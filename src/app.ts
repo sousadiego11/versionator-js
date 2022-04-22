@@ -1,3 +1,3 @@
-import Versionator from './Versionator/index.js'
+import { Versionator, VersionatorBuilder } from "./Versionator";
 
-export default new Versionator()
+export default new Versionator(new VersionatorBuilder())
