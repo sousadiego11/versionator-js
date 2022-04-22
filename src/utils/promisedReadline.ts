@@ -1,11 +1,7 @@
-
-import chalk from 'chalk'
 import { writeFileSync, PathOrFileDescriptor, readFileSync } from 'fs'
 import readline from 'readline'
-import root from './getRootPath.js'
+import getPromptMessage from './getPromptMessage.js'
 import getUrlGitRepo from './getUrlGitRepo.js'
-
-const { black } = chalk
 
 type Config = {
   commits_dir: string
@@ -15,25 +11,22 @@ type Config = {
 const promisedReadline = async (cfgDir: PathOrFileDescriptor) => {
   const commitsUrl = getUrlGitRepo('commits')
   const issuesUrl = getUrlGitRepo('issues')
+  const configs: Config = {
+    commits_dir: '',
+    issues_dir: ''
+  }
 
-  return await new Promise((resolve) => {
-
-    const configs: Config = {
-      commits_dir: '',
-      issues_dir: ''
-    }
-
+  return new Promise((resolve) => {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     })
 
-    rl.question(black.bgYellow.bold('URL for your repository COMMITS \n') + `Confirm the detected URL: "${commitsUrl}" - or type the URL: `, (commits_dir) => {
+    rl.question(getPromptMessage(commitsUrl), (commits_dir) => {
       configs.commits_dir = commits_dir || commitsUrl
 
-      rl.setPrompt(black.bgYellow.bold('URL for your repository ISSUES \n') + `Confirm the detected URL: "${issuesUrl}" - or type the URL: `)
+      rl.setPrompt(getPromptMessage(issuesUrl))
       rl.prompt()
-
       rl.on('line', (issue) => {
         configs.issues_dir = issue || issuesUrl
         rl.close()
