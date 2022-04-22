@@ -1,3 +1,4 @@
 import { Versionator, VersionatorBuilder } from "./Versionator";
 
-export default new Versionator(new VersionatorBuilder())
+const builder = new VersionatorBuilder()
+export default new Versionator(builder)

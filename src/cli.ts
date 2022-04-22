@@ -1,4 +1,5 @@
 #!/usr/bin/env node
 import { Versionator, VersionatorBuilder } from "./Versionator";
 
-new Versionator(new VersionatorBuilder()).build()
+const builder = new VersionatorBuilder()
+new Versionator(builder).build()
