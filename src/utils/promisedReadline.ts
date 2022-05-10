@@ -1,4 +1,4 @@
-import { writeFileSync, PathOrFileDescriptor, readFileSync } from 'fs'
+import { writeFileSync, PathOrFileDescriptor } from 'fs'
 import readline from 'readline'
 import getPromptMessage from './getPromptMessage.js'
 import getUrlGitRepo from './getUrlGitRepo.js'
@@ -22,21 +22,22 @@ const promisedReadline = async (cfgDir: PathOrFileDescriptor) => {
       output: process.stdout
     })
 
-    rl.question(getPromptMessage(commitsUrl), (commits_dir) => {
-      configs.commits_dir = commits_dir || commitsUrl
+    rl.question(getPromptMessage(commitsUrl, 'COMMITS'), (commitsDir) => {
+      configs.commits_dir = commitsDir || commitsUrl
 
-      rl.setPrompt(getPromptMessage(issuesUrl))
+      rl.setPrompt(getPromptMessage(issuesUrl, 'ISSUES'))
       rl.prompt()
       rl.on('line', (issue) => {
         configs.issues_dir = issue || issuesUrl
         rl.close()
       })
-
     })
 
     rl.on('close', () => {
-      writeFileSync(cfgDir, JSON.stringify(configs))
-      resolve
+      writeFileSync(cfgDir, JSON.stringify(configs), {
+        flag: 'a+'
+      })
+      resolve(null)
     })
   })
 }

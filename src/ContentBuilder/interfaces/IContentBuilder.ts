@@ -20,6 +20,7 @@ export interface IContentBuilder {
   buildCommits: (commits: string[]) => IContentBuilder.Commit[]
 }
 
+// eslint-disable-next-line no-redeclare
 export namespace IContentBuilder {
   export type BuildRequest = {
     body: string

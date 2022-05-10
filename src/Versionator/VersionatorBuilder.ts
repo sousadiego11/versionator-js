@@ -10,7 +10,6 @@ import promisedExec from '../utils/promisedExec.js'
 import targets from '../utils/targets.js'
 import { IVersionatorBuilder } from './interfaces/IVersionatorBuilder.js'
 
-
 const { version, existsChangelog, newDir, mdDir } = configs
 
 const { black } = chalk
@@ -26,6 +25,7 @@ export class VersionatorBuilder implements IVersionatorBuilder {
   buildFinalContent () {
     let finalContent = ''
     // @ts-expect-error
+    // eslint-disable-next-line no-return-assign
     Object.values(targets).forEach((t) => ContentBuilder[t].length > 1 ? finalContent += ContentBuilder[t].join('\n') : null)
 
     return finalContent

@@ -10,7 +10,7 @@ const promisedExec = async (cmd: string, transform: (chunk: string) => void) => 
       p.stdout.on('error', reject)
       p.stdout.on('close', resolve)
     } else {
-      reject('stdout is null')
+      reject(new Error('stdout is null'))
     }
   })
 }

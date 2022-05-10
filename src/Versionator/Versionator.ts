@@ -3,7 +3,8 @@ import { IVersionator } from './interfaces/IVersionator.js'
 import { IVersionatorBuilder } from './interfaces/IVersionatorBuilder.js'
 
 export class Versionator implements IVersionator {
-  constructor(private readonly versionatorBuilder: IVersionatorBuilder) {}
+  // eslint-disable-next-line no-useless-constructor
+  constructor (private readonly versionatorBuilder: IVersionatorBuilder) {}
 
   async build () {
     const configuredWorkspace = await terminalHandler()
