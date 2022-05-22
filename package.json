@@ -13,7 +13,8 @@
     "prepublish": "tsc",
     "build": "tsc",
     "test": "jest --passWithNoTests --runInBand --no-cache --watch --forceExit",
-    "versionator": "tsc & node ./dist/cli.js"
+    "versionator": "tsc & node ./dist/cli.js",
+    "patch": "git checkout main & npm version patch & npm publish & git push & git checkout develop & git merge main & git push"
   },
   "repository": {
     "type": "git",
