@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import promisedReadline from './promisedReadline.js'
+import createInitialConfig from './createInitialConfig.js'
 import configs from './configs.js'
 
 const { black } = chalk
@@ -14,7 +14,7 @@ export const terminalHandler = async () => {
     return false
   }
   if (configuring && !commitsDir) {
-    await promisedReadline(cfgDir)
+    await createInitialConfig()
     return false
   }
   return true
