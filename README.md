@@ -18,10 +18,13 @@
 ## 🚀 Configuration
 This package uses **[conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)** as a base for constructing the changelog, make sure your commits follow this pattern.
 
-Create a **changelog.config.json** in your root directory and provide the link for your repository's commits destination as the example bellow:
+Create a **changelog.config.json** in your root directory and provide the link for your project's commits and issues(optional).
+
+Configuration file example:
 ```javascript
 {
-    "commits_dir": "https://github.com/user/repository/commit"
+    "commits_dir": "https://github.com/user/repository/commit",
+    "issues_dir": "https://github.com/user/repository/issues"
 }
 ```
 Or configure your workspace with the command line:
@@ -59,6 +62,10 @@ npm install versionator-js -g
 versionator-js
 ```
 
+## 📚 Additional Instructions
+For issues to be used sucessfully, the issue identifier should be provided as "(#ISSUE_TAG)" at the commit body.
+
+Commit with issue example: "feat: add some components (#ISSUE-90)".
 ## ♻️ Contributing
 Keep in mind that it is still an ongoing project at its beginning, pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
