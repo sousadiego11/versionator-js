@@ -41,12 +41,11 @@ export class VersionatorBuilder implements IVersionatorBuilder {
     const data = existsChangelog && await readFilePromised(mdDir)
     const text = data?.toString('utf8').split('\n').join('')
     const date = /@(.+?)@/m.exec(text)
-    console.log("🚀 ~ file: VersionatorBuilder.ts ~ line 44 ~ VersionatorBuilder ~ getLog ~ date", date && date[1])
     const foundDate = existsChangelog && (date != null) ? new Date(date[1]) : false
 
     if (foundDate) foundDate.setSeconds(foundDate.getSeconds() + 1)
 
-    return foundDate ? `git log --since="${foundDate.toISOString()}" --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--` : 'git log --format=date={%as}author={%an}%s--DIVISOR--%h--DELIMITER--'
+    return foundDate ? `git log --since="${foundDate.toISOString()}" --date=short --format=date={%ad}author={%an}%s--DIVISOR--%h--DELIMITER--` : 'git log --date=short --format=date={%ad}author={%an}%s--DIVISOR--%h--DELIMITER--'
   }
 
   async handleFinish () {
@@ -78,7 +77,6 @@ export class VersionatorBuilder implements IVersionatorBuilder {
 
   async setNewContent () {
     const log = await this.getLog()
-    console.log("🚀 ~ file: VersionatorBuilder.ts ~ line 81 ~ VersionatorBuilder ~ setNewContent ~ log", log)
     await promisedExec(log, this.transformLogs)
     const finalContent = this.buildFinalContent()
 
