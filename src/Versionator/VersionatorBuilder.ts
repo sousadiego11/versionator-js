@@ -40,8 +40,8 @@ export class VersionatorBuilder implements IVersionatorBuilder {
   async getLog () {
     const data = existsChangelog && await readFilePromised(mdDir)
     const text = data?.toString('utf8').split('\n').join('')
-    const date = /@(.+?)@/m.exec(text)
-    const foundDate = existsChangelog && (date != null) ? new Date(date[1]) : false
+    const date = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)/m.exec(text);
+    const foundDate = existsChangelog && (date != null) ? new Date(date[0]) : false
 
     if (foundDate) foundDate.setSeconds(foundDate.getSeconds() + 1)
 
