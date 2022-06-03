@@ -41,6 +41,7 @@ export class VersionatorBuilder implements IVersionatorBuilder {
     const data = existsChangelog && await readFilePromised(mdDir)
     const text = data?.toString('utf8').split('\n').join('')
     const date = /@(.+?)@/m.exec(text)
+    console.log("🚀 ~ file: VersionatorBuilder.ts ~ line 44 ~ VersionatorBuilder ~ getLog ~ date", date && date[1])
     const foundDate = existsChangelog && (date != null) ? new Date(date[1]) : false
 
     if (foundDate) foundDate.setSeconds(foundDate.getSeconds() + 1)
@@ -77,6 +78,7 @@ export class VersionatorBuilder implements IVersionatorBuilder {
 
   async setNewContent () {
     const log = await this.getLog()
+    console.log("🚀 ~ file: VersionatorBuilder.ts ~ line 81 ~ VersionatorBuilder ~ setNewContent ~ log", log)
     await promisedExec(log, this.transformLogs)
     const finalContent = this.buildFinalContent()
 
