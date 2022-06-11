@@ -10,7 +10,7 @@ import promisedExec from '../utils/promisedExec.js'
 import targets from '../utils/targets.js'
 import { IVersionatorBuilder } from './interfaces/IVersionatorBuilder.js'
 
-const { version, existsChangelog, newDir, mdDir } = configs
+const { version, existsChangelog, newDir, mdDir, isoStringRegex } = configs
 
 const { black } = chalk
 
@@ -40,7 +40,7 @@ export class VersionatorBuilder implements IVersionatorBuilder {
   async getLog () {
     const data = existsChangelog && await readFilePromised(mdDir)
     const text = data?.toString('utf8').split('\n').join('')
-    const date = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)/m.exec(text);
+    const date = isoStringRegex.exec(text);
     const foundDate = existsChangelog && (date != null) ? new Date(date[0]) : false
 
     if (foundDate) foundDate.setSeconds(foundDate.getSeconds() + 1)
@@ -62,12 +62,7 @@ export class VersionatorBuilder implements IVersionatorBuilder {
 
   async setHeader () {
     const date = execSync('git log -1 --format=%aI').toString()
-    const readableNewVersion = new Readable({
-      read () {
-        this.push(`<!-- @${date}@ LATEST-VERSION(DONT REMOVE THIS LINE)-->\n# ${version} \n`)
-        this.push(null)
-      }
-    })
+    const readableNewVersion = Readable.from(`<!-- @${date}@ LATEST-VERSION(DONT REMOVE THIS LINE)-->\n# ${version} \n`)
 
     await pipelinePromised(readableNewVersion, createWriteStream(newDir, {
       flags: 'a+',
@@ -85,13 +80,7 @@ export class VersionatorBuilder implements IVersionatorBuilder {
       this.hasContents = true
     }
 
-    const readableNewContent = new Readable({
-      read () {
-        this.push(finalContent)
-        this.push(null)
-      }
-    })
-
+    const readableNewContent = Readable.from(finalContent)
     await pipelinePromised(readableNewContent, createWriteStream(newDir, {
       flags: 'a+',
       encoding: 'utf8'
@@ -99,13 +88,7 @@ export class VersionatorBuilder implements IVersionatorBuilder {
   }
 
   async setPreviousContent () {
-    const readableOldChangelog = existsChangelog
-      ? createReadStream(mdDir, 'utf8')
-      : new Readable({
-        read () {
-          this.push(null)
-        }
-      })
+    const readableOldChangelog = existsChangelog ? createReadStream(mdDir, 'utf8') : Readable.from('')
 
     await pipelinePromised(readableOldChangelog, createWriteStream(newDir, {
       flags: 'a+',

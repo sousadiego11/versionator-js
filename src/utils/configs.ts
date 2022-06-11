@@ -12,6 +12,7 @@ const mdDir = `${root}/CHANGELOG.md`
 const existsChangelog = existsSync(mdDir)
 const newDir = existsChangelog ? `${root}/CHANGELOG2.md` : mdDir
 const emojiRegex = /(:art:|:zap:|:fire:|:bug:|:sparkles:|:memo:|:rocket:|:tada:|:lipstick:|:ambulance:)/
+const isoStringRegex = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)/m
 
 const configs = {
   version,
@@ -22,7 +23,8 @@ const configs = {
   existsChangelog,
   pckgDir,
   cfgDir,
-  emojiRegex
+  emojiRegex,
+  isoStringRegex
 }
 
 export default configs
