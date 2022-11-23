@@ -4,7 +4,7 @@ import configs from './configs.js'
 
 const { black } = chalk
 
-const { commitsDir, cfgDir } = configs
+const { commitsDir } = configs
 
 export const terminalHandler = async () => {
   const configuring = process.argv[2] === 'init'
