@@ -18,13 +18,14 @@
 ## 🚀 Configuration
 This package uses **[conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)** as a base for constructing the changelog, make sure your commits follow this pattern.
 
-Create a **changelog.config.json** in your root directory and provide the link for your project's commits and issues(optional).
+Create a **changelog.config.json** in your root directory and provide the link for your project's commits, issues(optional) and changelog name(optional).
 
 Configuration file example:
 ```javascript
 {
     "commits_dir": "https://github.com/user/repository/commit",
-    "issues_dir": "https://github.com/user/repository/issues"
+    "issues_dir": "https://github.com/user/repository/issues",
+    "changelog_name": "CHANGELOG_CUSTOM_NAME"
 }
 ```
 Or configure your workspace with the command line:
