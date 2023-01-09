@@ -7,7 +7,7 @@
 - [ x ] Adicionar injeção de dependencia com padrão builder.
 - [  ] Controlar argv com yargs.
 - [  ] Incluir opção de versão ao gerar, do mesmo jeito que URL de commits.
-- [  ] Adicionar testes.
+- [  ] Atualizar dependencias.
 
 ### EN
 ### Todo
@@ -18,4 +18,4 @@
 - [ x ] Add dependency injection with builder pattern.
 - [  ] Control argv with yargs.
 - [  ] Include version option when generating, same as commits URL.
-- [  ] Add tests.
+- [  ] Atualizar dependencias.
